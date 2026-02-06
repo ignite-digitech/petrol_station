@@ -6,3 +6,5 @@
 # Patches added in this section will be executed after doctypes are migrated
 petrol_station.patches.seed_item_groups
 petrol_station.patches.seed_fuel_items
+petrol_station.patches.seed_warehouse_types
+petrol_station.patches.add_custom_fields
