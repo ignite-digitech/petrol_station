@@ -1,0 +1,52 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-06 16:19:40.190322",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "nozzle",
+  "reading",
+  "is_opening"
+ ],
+ "fields": [
+  {
+   "fieldname": "nozzle",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Pump Nozzle",
+   "options": "Pump Nozzle",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Reading",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_opening",
+   "fieldtype": "Check",
+   "label": "Is Opening",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-06 16:21:44.233277",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Meter Reading",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -6,6 +6,18 @@ frappe.ui.form.on("Fuel Pump", {
         cur_frm.add_custom_button(__("Create Tank"), function() {
             createTank()
         })
+
+        cur_frm.set_query("nozzle", "initial_readings", function(doc, cdt, cdn) {
+            return {
+                filters: {
+                    "pump": doc.name
+                }
+            }
+        })
+
+        if (cur_frm.is_new()){
+            cur_frm.set_df_property("initial_readings", "hidden", 1)
+        }
 	},
 });
 
