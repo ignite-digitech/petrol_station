@@ -1,16 +1,25 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:PMR-{M}-{YY}-{#####}",
+ "autoname": "format:PMR-{MM}-{YY}-{#####}",
  "creation": "2026-02-06 15:40:29.072350",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "pump",
   "fuel_item",
+  "tank",
+  "employee",
   "column_break_agfl",
   "posting_date",
   "posting_time",
+  "section_break_kbvw",
+  "readings",
+  "section_break_lyun",
+  "column_break_mimn",
+  "column_break_kmns",
+  "total_qty",
+  "total_amount",
   "section_break_wgxg",
   "amended_from"
  ],
@@ -62,13 +71,60 @@
    "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Fuel\"]]",
    "options": "Item",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_kbvw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "readings",
+   "fieldtype": "Table",
+   "label": "Readings",
+   "options": "Meter Reading",
+   "reqd": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "pump.tank",
+   "fieldname": "tank",
+   "fieldtype": "Link",
+   "label": "Tank",
+   "link_filters": "[[\"Warehouse\",\"is_group\",\"=\",0],[\"Warehouse\",\"warehouse_type\",\"=\",\"Fuel Tank\"]]",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "section_break_lyun",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_mimn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_kmns",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_qty",
+   "fieldtype": "Float",
+   "label": "Total Qty"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Sale Amount"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-06 15:48:19.246142",
+ "modified": "2026-02-06 17:53:08.874778",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Pump Meter Reading",

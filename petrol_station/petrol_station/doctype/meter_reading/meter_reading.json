@@ -7,8 +7,14 @@
  "engine": "InnoDB",
  "field_order": [
   "nozzle",
+  "opening_reading",
   "reading",
-  "is_opening"
+  "is_opening",
+  "testing_liters",
+  "column_break_jkct",
+  "sales_qty",
+  "selling_price",
+  "total_amount"
  ],
  "fields": [
   {
@@ -23,7 +29,7 @@
    "fieldname": "reading",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Reading",
+   "label": "Closing Reading",
    "non_negative": 1,
    "reqd": 1
   },
@@ -31,15 +37,50 @@
    "default": "0",
    "fieldname": "is_opening",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Opening",
    "read_only": 1
+  },
+  {
+   "fieldname": "opening_reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Opening Reading",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "testing_liters",
+   "fieldtype": "Float",
+   "label": "Testing Liters"
+  },
+  {
+   "fieldname": "sales_qty",
+   "fieldtype": "Float",
+   "label": "Sales Qty",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_jkct",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "selling_price",
+   "fieldtype": "Currency",
+   "label": "Selling Price"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Float",
+   "label": "Total Amount"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-06 16:21:44.233277",
+ "modified": "2026-02-06 17:49:43.947064",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Meter Reading",
