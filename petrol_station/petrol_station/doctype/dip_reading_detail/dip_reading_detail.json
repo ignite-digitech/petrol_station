@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-09 10:31:12.517487",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "tank",
+  "dip_log_id",
+  "opening_reading",
+  "physical_reading"
+ ],
+ "fields": [
+  {
+   "fieldname": "dip_log_id",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Dip Log ID",
+   "options": "Tank Dip Log"
+  },
+  {
+   "fieldname": "tank",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tank",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "physical_reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Physical Reading"
+  },
+  {
+   "fieldname": "opening_reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Opening reading"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-09 10:51:46.182181",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Dip Reading Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

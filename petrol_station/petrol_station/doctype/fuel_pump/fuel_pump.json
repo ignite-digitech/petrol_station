@@ -72,13 +72,13 @@
    "fieldname": "initial_readings",
    "fieldtype": "Table",
    "label": "Initial Readings",
-   "options": "Meter Reading"
+   "options": "Shift Opening Meter Reading"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-06 16:23:30.287285",
+ "modified": "2026-02-09 12:19:13.992874",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Fuel Pump",

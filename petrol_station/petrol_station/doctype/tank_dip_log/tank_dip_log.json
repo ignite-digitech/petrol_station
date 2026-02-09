@@ -7,20 +7,19 @@
  "engine": "InnoDB",
  "field_order": [
   "tank",
-  "column_break_qtca",
   "fuel_item",
+  "employee",
+  "column_break_qtca",
+  "posting_date",
+  "posting_time",
+  "posting_datetime",
   "section_break_nysf",
-  "opening_dip",
+  "physical_dip_reading_mm",
+  "conversion_factor",
+  "physical_liters",
   "column_break_isht",
-  "received_qty",
-  "column_break_wtjx",
-  "closing_dip",
-  "section_break_xasr",
-  "actual_sales_dip",
-  "column_break_kfav",
-  "meter_sales_qty",
-  "column_break_gezv",
-  "variance",
+  "opening_dip",
+  "water_level_mm",
   "section_break_n0sz",
   "amended_from"
  ],
@@ -69,38 +68,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "closing_dip",
-   "fieldtype": "Float",
-   "label": "Closing Dip",
-   "non_negative": 1,
-   "reqd": 1
-  },
-  {
-   "fieldname": "received_qty",
-   "fieldtype": "Float",
-   "label": "Received Qty"
-  },
-  {
-   "description": "(Opening + Received) - Closing.",
-   "fieldname": "actual_sales_dip",
-   "fieldtype": "Float",
-   "label": "Actual Sale dip",
-   "reqd": 1
-  },
-  {
-   "description": "Sum of readings from associated pumps.",
-   "fieldname": "meter_sales_qty",
-   "fieldtype": "Float",
-   "label": "Meter Sales Qty",
-   "reqd": 1
-  },
-  {
-   "description": "(actual_sales_dip - meter_sales_qty.)",
-   "fieldname": "variance",
-   "fieldtype": "Float",
-   "label": "Variance"
-  },
-  {
    "fieldname": "section_break_nysf",
    "fieldtype": "Section Break"
   },
@@ -109,27 +76,56 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_wtjx",
-   "fieldtype": "Column Break"
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
   },
   {
-   "fieldname": "section_break_xasr",
-   "fieldtype": "Section Break"
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time"
   },
   {
-   "fieldname": "column_break_kfav",
-   "fieldtype": "Column Break"
+   "fieldname": "posting_datetime",
+   "fieldtype": "Datetime",
+   "label": "Posting Datetime"
   },
   {
-   "fieldname": "column_break_gezv",
-   "fieldtype": "Column Break"
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "conversion_factor",
+   "fieldtype": "Float",
+   "label": "Conversion Factor"
+  },
+  {
+   "fieldname": "physical_liters",
+   "fieldtype": "Float",
+   "label": "Physical Liters",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "water_level_mm",
+   "fieldtype": "Float",
+   "label": "Water Level (mm)"
+  },
+  {
+   "fieldname": "physical_dip_reading_mm",
+   "fieldtype": "Float",
+   "label": "Physical Dip Reading (mm)",
+   "non_negative": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2026-02-06 18:11:36.679874",
+ "modified": "2026-02-09 10:50:29.399296",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Tank Dip Log",
@@ -146,7 +142,6 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "submit": 1,
    "write": 1
   }
  ],

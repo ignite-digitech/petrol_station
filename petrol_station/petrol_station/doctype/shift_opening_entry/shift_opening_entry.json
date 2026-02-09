@@ -7,12 +7,16 @@
  "engine": "InnoDB",
  "field_order": [
   "shift_type",
-  "attendant",
+  "posting_date",
+  "posting_time",
+  "posting_datetime",
   "column_break_esun",
   "supervisor",
+  "attendant",
   "section_break_mdmu",
   "opening_meter_readings",
   "opening_balances",
+  "dip_readings",
   "section_break_ba5t",
   "amended_from"
  ],
@@ -73,13 +77,37 @@
    "fieldtype": "Table",
    "label": "Opening Balance Detail (Cash/Mobile Money)",
    "options": "POS Opening Entry Detail"
+  },
+  {
+   "fieldname": "dip_readings",
+   "fieldtype": "Table",
+   "label": "Dip Readings",
+   "options": "Dip Reading Detail",
+   "read_only": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_datetime",
+   "fieldtype": "Datetime",
+   "label": "Posting Datetime"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-06 21:25:05.003642",
+ "modified": "2026-02-09 11:22:03.370422",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Shift Opening Entry",

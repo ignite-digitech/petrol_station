@@ -7,37 +7,28 @@
  "engine": "InnoDB",
  "field_order": [
   "pump",
+  "nozzle",
   "fuel_item",
   "tank",
-  "employee",
+  "is_opening",
   "column_break_agfl",
+  "employee",
   "posting_date",
   "posting_time",
-  "section_break_kbvw",
-  "readings",
-  "section_break_lyun",
-  "column_break_mimn",
-  "column_break_kmns",
-  "total_qty",
-  "total_amount",
-  "section_break_wgxg",
-  "amended_from"
+  "voucher_type",
+  "voucher_no",
+  "voucher_detail_no",
+  "section_break_smxt",
+  "opening_expected",
+  "sales_qty",
+  "closing_qty",
+  "variation",
+  "column_break_znql",
+  "physical_opening",
+  "selling_price",
+  "sales_amount"
  ],
  "fields": [
-  {
-   "fieldname": "section_break_wgxg",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Pump Meter Reading",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
-  },
   {
    "fieldname": "posting_date",
    "fieldtype": "Date",
@@ -73,17 +64,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "section_break_kbvw",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "readings",
-   "fieldtype": "Table",
-   "label": "Readings",
-   "options": "Meter Reading",
-   "reqd": 1
-  },
-  {
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Employee",
@@ -98,33 +78,84 @@
    "options": "Warehouse"
   },
   {
-   "fieldname": "section_break_lyun",
+   "fieldname": "nozzle",
+   "fieldtype": "Link",
+   "label": "Nozzle",
+   "options": "Pump Nozzle",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_smxt",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "column_break_mimn",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_kmns",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "total_qty",
+   "fieldname": "opening_expected",
    "fieldtype": "Float",
-   "label": "Total Qty"
+   "label": "Opening (Expected)"
   },
   {
-   "fieldname": "total_amount",
+   "fieldname": "column_break_znql",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "physical_opening",
+   "fieldtype": "Float",
+   "label": "Physical Opening"
+  },
+  {
+   "fieldname": "sales_qty",
+   "fieldtype": "Float",
+   "label": "Sales Qty"
+  },
+  {
+   "fieldname": "selling_price",
    "fieldtype": "Currency",
-   "label": "Sale Amount"
+   "label": "Selling Price"
+  },
+  {
+   "fieldname": "closing_qty",
+   "fieldtype": "Float",
+   "label": "Closing Qty"
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Link",
+   "label": "Voucher Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Dynamic Link",
+   "label": "Voucher No",
+   "options": "voucher_type"
+  },
+  {
+   "fieldname": "voucher_detail_no",
+   "fieldtype": "Data",
+   "label": "Voucher Detail No"
+  },
+  {
+   "fieldname": "sales_amount",
+   "fieldtype": "Currency",
+   "label": "Sales Amount"
+  },
+  {
+   "fieldname": "variation",
+   "fieldtype": "Float",
+   "label": "Variation"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_opening",
+   "fieldtype": "Check",
+   "label": "Is Opening"
   }
  ],
  "grid_page_length": 50,
+ "in_create": 1,
  "index_web_pages_for_search": 1,
- "is_submittable": 1,
  "links": [],
- "modified": "2026-02-06 17:53:08.874778",
+ "modified": "2026-02-09 12:06:27.565737",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Pump Meter Reading",
@@ -141,7 +172,6 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "submit": 1,
    "write": 1
   }
  ],
