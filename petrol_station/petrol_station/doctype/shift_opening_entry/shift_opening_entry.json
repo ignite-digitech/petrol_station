@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:ST-OP-{YYYY}-{#####}",
+ "creation": "2026-02-06 19:23:08.157877",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "shift_type",
+  "attendant",
+  "column_break_esun",
+  "supervisor",
+  "section_break_mdmu",
+  "opening_meter_readings",
+  "opening_balances",
+  "section_break_ba5t",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_ba5t",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Shift Opening Entry",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "shift_type",
+   "fieldtype": "Select",
+   "label": "Shift Type",
+   "options": "Day\nNight"
+  },
+  {
+   "fieldname": "column_break_esun",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supervisor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Supervisor",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "attendant",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Attendant",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "section_break_mdmu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "opening_meter_readings",
+   "fieldtype": "Table",
+   "label": "Opening Meter Readings",
+   "options": "Shift Opening Meter Reading",
+   "reqd": 1
+  },
+  {
+   "fieldname": "opening_balances",
+   "fieldtype": "Table",
+   "label": "Opening Balance Detail (Cash/Mobile Money)",
+   "options": "POS Opening Entry Detail"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-02-06 21:25:05.003642",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Shift Opening Entry",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

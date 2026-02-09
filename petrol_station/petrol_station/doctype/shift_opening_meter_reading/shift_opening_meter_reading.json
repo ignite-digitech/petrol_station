@@ -1,0 +1,51 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-06 21:14:39.882343",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "nozzle",
+  "expected_reading",
+  "opening_reading"
+ ],
+ "fields": [
+  {
+   "fieldname": "nozzle",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Nozzle",
+   "options": "Pump Nozzle",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expected_reading",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Expected"
+  },
+  {
+   "fieldname": "opening_reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Opening Reading",
+   "non_negative": 1,
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-06 21:17:59.976214",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Shift Opening Meter Reading",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

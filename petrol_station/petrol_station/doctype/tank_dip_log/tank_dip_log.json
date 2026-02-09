@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:TDL-{MM}-{YY}-{####}",
+ "creation": "2026-02-06 17:37:53.270939",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "tank",
+  "column_break_qtca",
+  "fuel_item",
+  "section_break_nysf",
+  "opening_dip",
+  "column_break_isht",
+  "received_qty",
+  "column_break_wtjx",
+  "closing_dip",
+  "section_break_xasr",
+  "actual_sales_dip",
+  "column_break_kfav",
+  "meter_sales_qty",
+  "column_break_gezv",
+  "variance",
+  "section_break_n0sz",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_n0sz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Tank Dip Log",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "tank",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tank",
+   "link_filters": "[[\"Warehouse\",\"is_group\",\"=\",0],[\"Warehouse\",\"warehouse_type\",\"=\",\"Fuel Tank\"]]",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "tank.fuel_item",
+   "fieldname": "fuel_item",
+   "fieldtype": "Link",
+   "label": "Fuel Item",
+   "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Fuel\"]]",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_qtca",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "opening_dip",
+   "fieldtype": "Float",
+   "label": "Opening Dip",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "closing_dip",
+   "fieldtype": "Float",
+   "label": "Closing Dip",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "received_qty",
+   "fieldtype": "Float",
+   "label": "Received Qty"
+  },
+  {
+   "description": "(Opening + Received) - Closing.",
+   "fieldname": "actual_sales_dip",
+   "fieldtype": "Float",
+   "label": "Actual Sale dip",
+   "reqd": 1
+  },
+  {
+   "description": "Sum of readings from associated pumps.",
+   "fieldname": "meter_sales_qty",
+   "fieldtype": "Float",
+   "label": "Meter Sales Qty",
+   "reqd": 1
+  },
+  {
+   "description": "(actual_sales_dip - meter_sales_qty.)",
+   "fieldname": "variance",
+   "fieldtype": "Float",
+   "label": "Variance"
+  },
+  {
+   "fieldname": "section_break_nysf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_isht",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wtjx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_xasr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_kfav",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_gezv",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-02-06 18:11:36.679874",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Tank Dip Log",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "tank"
+}

@@ -1,0 +1,205 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:FL-{YYYY}-{MM}-{#####}",
+ "creation": "2026-02-09 09:18:38.945740",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "fuel_item",
+  "fuel_tank",
+  "posting_date",
+  "posting_time",
+  "posting_datetime",
+  "column_break_seio",
+  "voucher_type",
+  "voucher_no",
+  "voucher_detail_no",
+  "section_break_pmpo",
+  "opening_book_balance",
+  "liters_in",
+  "liters_our",
+  "column_break_alcm",
+  "return_to_tank",
+  "closing_book_balance",
+  "section_break_fnwk",
+  "physical_dip_reading_mm",
+  "conversion_factor",
+  "physical_dip_reading_liters",
+  "column_break_jryi",
+  "water_level_mm",
+  "section_break_jgrv",
+  "variation_liters",
+  "variation_percentage",
+  "column_break_almy",
+  "variation_value",
+  "shortage_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time"
+  },
+  {
+   "fieldname": "column_break_seio",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_datetime",
+   "fieldtype": "Datetime",
+   "label": "Posting Datetime"
+  },
+  {
+   "fieldname": "fuel_item",
+   "fieldtype": "Link",
+   "label": "Fuel Item",
+   "options": "Item"
+  },
+  {
+   "fieldname": "fuel_tank",
+   "fieldtype": "Link",
+   "label": "Fuel Tank",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "voucher_type",
+   "fieldtype": "Link",
+   "label": "Voucher Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "voucher_no",
+   "fieldtype": "Dynamic Link",
+   "label": "Voucher No",
+   "options": "voucher_type"
+  },
+  {
+   "fieldname": "voucher_detail_no",
+   "fieldtype": "Data",
+   "label": "Voucher Detail No"
+  },
+  {
+   "fieldname": "section_break_pmpo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "opening_book_balance",
+   "fieldtype": "Float",
+   "label": "Opening Book Balance"
+  },
+  {
+   "fieldname": "liters_in",
+   "fieldtype": "Float",
+   "label": "Liters In (Inflow)"
+  },
+  {
+   "fieldname": "liters_our",
+   "fieldtype": "Float",
+   "label": "Liters Out (Outflow)"
+  },
+  {
+   "fieldname": "column_break_alcm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "return_to_tank",
+   "fieldtype": "Float",
+   "label": "RTT (Return to Tank)"
+  },
+  {
+   "fieldname": "closing_book_balance",
+   "fieldtype": "Float",
+   "label": "Closing Book Balance"
+  },
+  {
+   "fieldname": "section_break_fnwk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "physical_dip_reading_mm",
+   "fieldtype": "Float",
+   "label": "Physical Dip Reading (mm)"
+  },
+  {
+   "fieldname": "conversion_factor",
+   "fieldtype": "Float",
+   "label": "Conversion Factor"
+  },
+  {
+   "fieldname": "physical_dip_reading_liters",
+   "fieldtype": "Float",
+   "label": "Physical Dip Reading (Liters)"
+  },
+  {
+   "fieldname": "column_break_jryi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "water_level_mm",
+   "fieldtype": "Float",
+   "label": "Water Level (mm)"
+  },
+  {
+   "fieldname": "section_break_jgrv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "variation_liters",
+   "fieldtype": "Float",
+   "label": "Variation (Liters)"
+  },
+  {
+   "fieldname": "variation_percentage",
+   "fieldtype": "Float",
+   "label": "Variation Percentage"
+  },
+  {
+   "fieldname": "column_break_almy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "variation_value",
+   "fieldtype": "Currency",
+   "label": "Variation Value"
+  },
+  {
+   "fieldname": "shortage_status",
+   "fieldtype": "Select",
+   "label": "Shortage Status",
+   "options": "Normal\nHigh Loss\nHigh Gain"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-02-09 09:47:27.700897",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Fuel Ledger",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
