@@ -20,6 +20,7 @@
   "column_break_isht",
   "opening_dip",
   "water_level_mm",
+  "stock_in",
   "section_break_n0sz",
   "amended_from"
  ],
@@ -61,10 +62,12 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "0",
    "fieldname": "opening_dip",
    "fieldtype": "Float",
    "label": "Opening Dip",
    "non_negative": 1,
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -120,12 +123,19 @@
    "label": "Physical Dip Reading (mm)",
    "non_negative": 1,
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "stock_in",
+   "fieldtype": "Float",
+   "label": "Stock In"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-02-09 10:50:29.399296",
+ "modified": "2026-02-09 16:10:00.301895",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Tank Dip Log",

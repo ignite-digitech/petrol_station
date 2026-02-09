@@ -15,10 +15,11 @@
   "voucher_type",
   "voucher_no",
   "voucher_detail_no",
+  "is_cancelled",
   "section_break_pmpo",
   "opening_book_balance",
   "liters_in",
-  "liters_our",
+  "liters_out",
   "column_break_alcm",
   "return_to_tank",
   "closing_book_balance",
@@ -39,12 +40,14 @@
   {
    "fieldname": "posting_date",
    "fieldtype": "Date",
-   "label": "Posting Date"
+   "label": "Posting Date",
+   "read_only": 1
   },
   {
    "fieldname": "posting_time",
    "fieldtype": "Time",
-   "label": "Posting Time"
+   "label": "Posting Time",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_seio",
@@ -53,36 +56,47 @@
   {
    "fieldname": "posting_datetime",
    "fieldtype": "Datetime",
-   "label": "Posting Datetime"
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Posting Datetime",
+   "read_only": 1
   },
   {
    "fieldname": "fuel_item",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Fuel Item",
-   "options": "Item"
+   "options": "Item",
+   "read_only": 1
   },
   {
    "fieldname": "fuel_tank",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Fuel Tank",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "read_only": 1
   },
   {
    "fieldname": "voucher_type",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Voucher Type",
-   "options": "DocType"
+   "options": "DocType",
+   "read_only": 1
   },
   {
    "fieldname": "voucher_no",
    "fieldtype": "Dynamic Link",
    "label": "Voucher No",
-   "options": "voucher_type"
+   "options": "voucher_type",
+   "read_only": 1
   },
   {
    "fieldname": "voucher_detail_no",
    "fieldtype": "Data",
-   "label": "Voucher Detail No"
+   "label": "Voucher Detail No",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_pmpo",
@@ -91,17 +105,14 @@
   {
    "fieldname": "opening_book_balance",
    "fieldtype": "Float",
-   "label": "Opening Book Balance"
+   "label": "Opening Book Balance",
+   "read_only": 1
   },
   {
    "fieldname": "liters_in",
    "fieldtype": "Float",
-   "label": "Liters In (Inflow)"
-  },
-  {
-   "fieldname": "liters_our",
-   "fieldtype": "Float",
-   "label": "Liters Out (Outflow)"
+   "label": "Liters In (Inflow)",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_alcm",
@@ -110,12 +121,15 @@
   {
    "fieldname": "return_to_tank",
    "fieldtype": "Float",
-   "label": "RTT (Return to Tank)"
+   "label": "RTT (Return to Tank)",
+   "read_only": 1
   },
   {
    "fieldname": "closing_book_balance",
    "fieldtype": "Float",
-   "label": "Closing Book Balance"
+   "in_list_view": 1,
+   "label": "Closing Book Balance",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_fnwk",
@@ -124,17 +138,20 @@
   {
    "fieldname": "physical_dip_reading_mm",
    "fieldtype": "Float",
-   "label": "Physical Dip Reading (mm)"
+   "label": "Physical Dip Reading (mm)",
+   "read_only": 1
   },
   {
    "fieldname": "conversion_factor",
    "fieldtype": "Float",
-   "label": "Conversion Factor"
+   "label": "Conversion Factor",
+   "read_only": 1
   },
   {
    "fieldname": "physical_dip_reading_liters",
    "fieldtype": "Float",
-   "label": "Physical Dip Reading (Liters)"
+   "label": "Physical Dip Reading (Liters)",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_jryi",
@@ -143,7 +160,8 @@
   {
    "fieldname": "water_level_mm",
    "fieldtype": "Float",
-   "label": "Water Level (mm)"
+   "label": "Water Level (mm)",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_jgrv",
@@ -152,12 +170,14 @@
   {
    "fieldname": "variation_liters",
    "fieldtype": "Float",
-   "label": "Variation (Liters)"
+   "label": "Variation (Liters)",
+   "read_only": 1
   },
   {
    "fieldname": "variation_percentage",
    "fieldtype": "Float",
-   "label": "Variation Percentage"
+   "label": "Variation Percentage",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_almy",
@@ -166,20 +186,35 @@
   {
    "fieldname": "variation_value",
    "fieldtype": "Currency",
-   "label": "Variation Value"
+   "label": "Variation Value",
+   "read_only": 1
   },
   {
    "fieldname": "shortage_status",
    "fieldtype": "Select",
    "label": "Shortage Status",
-   "options": "Normal\nHigh Loss\nHigh Gain"
+   "options": "Normal\nHigh Loss\nHigh Gain",
+   "read_only": 1
+  },
+  {
+   "fieldname": "liters_out",
+   "fieldtype": "Float",
+   "label": "Liters Out (Outflow)",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-09 12:05:28.405384",
+ "modified": "2026-02-09 15:35:44.469931",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Fuel Ledger",

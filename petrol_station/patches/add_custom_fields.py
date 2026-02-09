@@ -9,6 +9,27 @@ custom_fields = {
             "fieldtype": "Link",
             "options": "Item"
         }
+    ],
+    "Stock Entry Detail": [
+        {
+            "fieldname": "ref_tank_dip_log",
+            "insert_after": "reference_purchase_receipt",
+            "label": "Reference Tank Dip Log",
+            "fieldtype": "Link",
+            "options": "Tank Dip Log",
+            "read_only": 1,
+        }
+    ],
+    "Stock Reconciliation": [
+        {
+            "fieldname": "ref_tank_dip_log",
+            "insert_after": "cost_center",
+            "label": "Tank Dip Log",
+            "fieldtype": "Link",
+            "options": "Tank Dip Log",
+            "read_only": 1,
+            "hidden": 1,
+        }
     ]
 }
 
