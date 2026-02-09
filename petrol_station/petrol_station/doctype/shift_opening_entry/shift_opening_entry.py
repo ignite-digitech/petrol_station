@@ -5,6 +5,10 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import today
 from petrol_station.petrol_station.doctype.tank_dip_log.tank_dip_log import get_tank_dip_logs_by_date
+from petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading import (
+	create_pump_meter_reading,
+	PumpMeterReadingData
+)
 
 
 class ShiftOpeningEntry(Document):
@@ -50,13 +54,101 @@ class ShiftOpeningEntry(Document):
 		except Exception as e:
 			frappe.log_error(title="Error in fetching tank dip logs", message=e)
 
+	def on_submit(self):
+		self.create_pump_meter_readings_from_opening_readings()
+
 
 	def validate(self):
 		self.validate_dip_logs_existence()
+
+	def on_cancel(self):
+		self.cancel_pump_meter_readings()
 
 	def validate_dip_logs_existence(self):
 		tank_readings = get_tank_dip_logs_by_date(self.posting_date)
 		if not tank_readings or len(tank_readings) == 0:
 			frappe.throw("No tank dip logs found for the selected date")
+
+	def create_pump_meter_readings_from_opening_readings(self):
+		"""
+		Create Pump Meter Reading documents from opening_meter_readings table.
+		Validates that opening_meter_readings exist before creating.
+
+		Returns:
+			list: List of created Pump Meter Reading documents
+
+		Raises:
+			frappe.ValidationError: If no opening meter readings exist
+		"""
+		if not self.opening_meter_readings:
+			frappe.throw(
+				"No opening meter readings found to create Pump Meter Readings.",
+				frappe.ValidationError
+			)
+
+		created_readings = []
+
+		for reading in self.opening_meter_readings:
+			# Get pump and fuel item from nozzle
+			nozzle_doc = frappe.get_doc("Pump Nozzle", reading.nozzle)
+			pump = nozzle_doc.pump
+
+			# Get fuel item and tank from pump
+			pump_doc = frappe.get_doc("Fuel Pump", pump)
+			fuel_item = pump_doc.fuel_item
+			tank = reading.tank or pump_doc.tank
+
+			# Create PumpMeterReadingData dataclass instance
+			reading_data = PumpMeterReadingData(
+				pump=pump,
+				nozzle=reading.nozzle,
+				fuel_item=fuel_item,
+				opening_expected=reading.expected_reading or 0,
+				physical_opening=reading.opening_reading,
+				sales_qty=0,  # Opening reading, no sales yet
+				posting_date=self.posting_date,
+				posting_time=self.posting_time,
+				employee=self.supervisor or self.attendant,
+				tank=tank,
+				voucher_type="Shift Opening Entry",
+				voucher_no=self.name,
+				voucher_detail_no=reading.name
+			)
+
+			# Create the Pump Meter Reading
+			pump_meter_reading = create_pump_meter_reading(reading_data)
+			created_readings.append(pump_meter_reading)
+
+		return created_readings
+
+	def cancel_pump_meter_readings(self):
+		"""
+		Mark all Pump Meter Readings linked to this Shift Opening Entry as cancelled.
+		Sets is_cancelled = 1 for all related Pump Meter Readings.
+
+		Returns:
+			int: Number of Pump Meter Readings marked as cancelled
+		"""
+		# Find all Pump Meter Readings linked to this Shift Opening Entry
+		pump_meter_readings = frappe.get_all(
+			"Pump Meter Reading",
+			filters={
+				"voucher_type": "Shift Opening Entry",
+				"voucher_no": self.name,
+				"is_cancelled": 0
+			},
+			pluck="name"
+		)
+
+		if not pump_meter_readings:
+			return 0
+
+		# Mark each reading as cancelled
+		for reading_name in pump_meter_readings:
+			frappe.db.set_value("Pump Meter Reading", reading_name, "is_cancelled", 1)
+
+		frappe.db.commit()
+
+		return len(pump_meter_readings)
 
 

@@ -20,6 +20,7 @@ class PumpMeterReading(Document):
 		closing_qty: DF.Float
 		employee: DF.Link | None
 		fuel_item: DF.Link
+		is_cancelled: DF.Check
 		is_opening: DF.Check
 		nozzle: DF.Link
 		opening_expected: DF.Float
@@ -71,6 +72,9 @@ def create_pump_meter_reading(data: PumpMeterReadingData):
 	"""
 	# Calculate variation
 	variation = abs(data.opening_expected - data.physical_opening)
+
+	if data.is_opening == 1:
+		variation = 0
 
 	# Get selling price from Item Price
 	selling_price = get_selling_price(data.fuel_item)
@@ -144,5 +148,92 @@ def get_selling_price(item_code, price_list=None, customer=None):
 			"price_list_rate"
 		)
 		return price or 0
+
+@frappe.whitelist()
+def get_last_closing_qty_for_nozzle(nozzle, posting_date=None, posting_time=None):
+	"""
+	Fetch the last closing_qty for a nozzle with optional date and time filters.
+
+	Args:
+		nozzle (str): Nozzle name/ID
+		posting_date (str, optional): Filter readings on or before this date (YYYY-MM-DD format). Defaults to current date.
+		posting_time (str, optional): Filter readings on or before this time (HH:MM:SS format). Defaults to current time.
+
+	Returns:
+		float: Last closing quantity for the nozzle, or 0 if not found
+	"""
+	if not nozzle:
+		return 0
+
+	# Set defaults to current date and time if not provided
+	if not posting_date:
+		from frappe.utils import today, now_datetime
+		posting_date = today()
+
+	if not posting_time:
+		from frappe.utils import now_datetime
+		posting_time = now_datetime().strftime("%H:%M:%S")
+
+	filters = {"nozzle": nozzle}
+
+	# Build the query conditions
+	conditions = []
+	if posting_date:
+		if posting_time:
+			# If both date and time provided, filter by datetime
+			conditions.append(
+				f"(posting_date <= '{posting_date}' OR "
+				f"(posting_date <= '{posting_date}' AND posting_time <= '{posting_time}'))"
+			)
+		else:
+			# If only date provided, filter by date
+			filters["posting_date"] = ["<=", posting_date]
+
+	# Query for the last reading
+	query = """
+		SELECT closing_qty
+		FROM `tabPump Meter Reading`
+		WHERE nozzle = %(nozzle)s
+	"""
+
+	if posting_date:
+		if posting_time:
+			query += f" AND (posting_date <= %(posting_date)s OR (posting_date <= %(posting_date)s AND posting_time <= %(posting_time)s))"
+		else:
+			query += " AND posting_date <= %(posting_date)s"
+
+	query += " ORDER BY posting_date DESC, posting_time DESC LIMIT 1"
+
+	result = frappe.db.sql(
+		query,
+		{"nozzle": nozzle, "posting_date": posting_date, "posting_time": posting_time},
+		as_dict=True
+	)
+
+	if result and len(result) > 0:
+		return result[0].get("closing_qty", 0) or 0
+
+	return 0
+
+
+@frappe.whitelist()
+def auto_fetch_nozzle_opening_reading(nozzle, posting_date=None, posting_time=None):
+	"""
+	Auto-fetch the closing balance for a nozzle and return it for updating opening_reading and expected_reading.
+
+	Args:
+		nozzle (str): Nozzle name/ID
+		posting_date (str, optional): Filter readings on or before this date. Defaults to current date.
+		posting_time (str, optional): Filter readings on or before this time. Defaults to current time.
+
+	Returns:
+		dict: Dictionary with opening_reading and expected_reading values
+	"""
+	closing_qty = get_last_closing_qty_for_nozzle(nozzle, posting_date, posting_time)
+
+	return {
+		"opening_reading": closing_qty,
+		"expected_reading": closing_qty
+	}
 
 

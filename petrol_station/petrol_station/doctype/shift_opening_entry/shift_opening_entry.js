@@ -52,3 +52,29 @@ frappe.ui.form.on("Shift Opening Entry", {
         });
     }
 });
+
+frappe.ui.form.on("Shift Opening Meter Reading", {
+	nozzle(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+
+		if (row.nozzle) {
+			// Auto-fetch the last closing qty for this nozzle
+			frappe.call({
+				method: 'petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading.auto_fetch_nozzle_opening_reading',
+				args: {
+					nozzle: row.nozzle,
+					posting_date: frm.doc.posting_date,
+					posting_time: frm.doc.posting_time
+				},
+				freeze: true,
+				freeze_message: __('Fetching last closing reading for {0}', [row.nozzle]),
+				callback: function(r) {
+					if (r.message) {
+						frappe.model.set_value(cdt, cdn, 'opening_reading', r.message.opening_reading);
+						frappe.model.set_value(cdt, cdn, 'expected_reading', r.message.expected_reading);
+					}
+				}
+			});
+		}
+	}
+});

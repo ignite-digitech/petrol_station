@@ -11,6 +11,7 @@
   "fuel_item",
   "tank",
   "is_opening",
+  "is_cancelled",
   "column_break_agfl",
   "employee",
   "posting_date",
@@ -34,6 +35,7 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Posting Date",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -41,6 +43,7 @@
    "fieldtype": "Time",
    "in_list_view": 1,
    "label": "Posting Time",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -48,6 +51,7 @@
    "fieldtype": "Link",
    "label": "Pump",
    "options": "Fuel Pump",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -61,13 +65,15 @@
    "label": "Fuel Item",
    "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Fuel\"]]",
    "options": "Item",
+   "read_only": 1,
    "reqd": 1
   },
   {
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Employee",
-   "options": "Employee"
+   "options": "Employee",
+   "read_only": 1
   },
   {
    "fetch_from": "pump.tank",
@@ -75,13 +81,15 @@
    "fieldtype": "Link",
    "label": "Tank",
    "link_filters": "[[\"Warehouse\",\"is_group\",\"=\",0],[\"Warehouse\",\"warehouse_type\",\"=\",\"Fuel Tank\"]]",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "read_only": 1
   },
   {
    "fieldname": "nozzle",
    "fieldtype": "Link",
    "label": "Nozzle",
    "options": "Pump Nozzle",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -91,7 +99,8 @@
   {
    "fieldname": "opening_expected",
    "fieldtype": "Float",
-   "label": "Opening (Expected)"
+   "label": "Opening (Expected)",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_znql",
@@ -100,62 +109,79 @@
   {
    "fieldname": "physical_opening",
    "fieldtype": "Float",
-   "label": "Physical Opening"
+   "label": "Physical Opening",
+   "read_only": 1
   },
   {
    "fieldname": "sales_qty",
    "fieldtype": "Float",
-   "label": "Sales Qty"
+   "label": "Sales Qty",
+   "read_only": 1
   },
   {
    "fieldname": "selling_price",
    "fieldtype": "Currency",
-   "label": "Selling Price"
+   "label": "Selling Price",
+   "read_only": 1
   },
   {
    "fieldname": "closing_qty",
    "fieldtype": "Float",
-   "label": "Closing Qty"
+   "label": "Closing Qty",
+   "read_only": 1
   },
   {
    "fieldname": "voucher_type",
    "fieldtype": "Link",
    "label": "Voucher Type",
-   "options": "DocType"
+   "options": "DocType",
+   "read_only": 1
   },
   {
    "fieldname": "voucher_no",
    "fieldtype": "Dynamic Link",
    "label": "Voucher No",
-   "options": "voucher_type"
+   "options": "voucher_type",
+   "read_only": 1
   },
   {
    "fieldname": "voucher_detail_no",
    "fieldtype": "Data",
-   "label": "Voucher Detail No"
+   "label": "Voucher Detail No",
+   "read_only": 1
   },
   {
    "fieldname": "sales_amount",
    "fieldtype": "Currency",
-   "label": "Sales Amount"
+   "label": "Sales Amount",
+   "read_only": 1
   },
   {
    "fieldname": "variation",
    "fieldtype": "Float",
-   "label": "Variation"
+   "label": "Variation",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "is_opening",
    "fieldtype": "Check",
-   "label": "Is Opening"
+   "label": "Is Opening",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-09 12:06:27.565737",
+ "modified": "2026-02-09 14:33:16.610166",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Pump Meter Reading",
