@@ -33,7 +33,7 @@
   "section_break_gunj",
   "amended_from",
   "tank_dip_tab",
-  "table_ojzv",
+  "dip_readings",
   "summaries_tab",
   "total_shift_revenue",
   "total_variation_l",
@@ -192,11 +192,6 @@
    "label": "Tank Dip"
   },
   {
-   "fieldname": "table_ojzv",
-   "fieldtype": "Table",
-   "options": "Closing Tank Dip"
-  },
-  {
    "fieldname": "summaries_tab",
    "fieldtype": "Tab Break",
    "label": "Summary"
@@ -235,13 +230,18 @@
    "fieldtype": "Currency",
    "label": "Total Credit Sales",
    "read_only": 1
+  },
+  {
+   "fieldname": "dip_readings",
+   "fieldtype": "Table",
+   "options": "Closing Tank Dip"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-10 17:36:16.801862",
+ "modified": "2026-02-10 18:49:36.988027",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Shift Closing Entry",

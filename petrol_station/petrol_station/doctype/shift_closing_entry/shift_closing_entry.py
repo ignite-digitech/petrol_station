@@ -21,6 +21,7 @@ class ShiftClosingEntry(Document):
 		amended_from: DF.Link | None
 		company: DF.Link
 		credit_sales: DF.Table[ShiftCreditSale]
+		dip_readings: DF.Table[ClosingTankDip]
 		managers_comments: DF.SmallText | None
 		meter_readings: DF.Table[ClosingMeterReading]
 		payment_reconciliation: DF.Table[POSClosingEntryDetail]
@@ -30,7 +31,6 @@ class ShiftClosingEntry(Document):
 		posting_time: DF.Time
 		shift_opening_entry: DF.Link
 		supervisor: DF.Link
-		table_ojzv: DF.Table[ClosingTankDip]
 		total_credit_sales: DF.Currency
 		total_meter_sales: DF.Currency
 		total_qty: DF.Float
