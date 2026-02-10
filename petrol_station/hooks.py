@@ -132,13 +132,12 @@ app_include_js = "/assets/petrol_station/js/petrol_station.bundle.js"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Purchase Receipt": {
+		"on_submit": "petrol_station.overrides.purchase_receipt.on_submit",
+		"on_cancel": "petrol_station.overrides.purchase_receipt.on_cancel"
+	}
+}
 
 # Scheduled Tasks
 # ---------------

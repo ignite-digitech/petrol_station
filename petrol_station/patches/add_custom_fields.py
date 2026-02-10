@@ -30,6 +30,16 @@ custom_fields = {
             "read_only": 1,
             "hidden": 1,
         }
+    ],
+    "Purchase Receipt Item": [
+        {
+            "fieldname": "opening_shift",
+            "insert_after": "project",
+            "label": "Reference Opening Shift",
+            "fieldtype": "Link",
+            "options": "Shift Opening Entry",
+            "read_only": 1,
+        }
     ]
 }
 

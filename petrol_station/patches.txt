@@ -7,5 +7,5 @@
 petrol_station.patches.seed_item_groups
 petrol_station.patches.seed_fuel_items
 petrol_station.patches.seed_warehouse_types
-petrol_station.patches.add_custom_fields #2026-02-10
+petrol_station.patches.add_custom_fields #2026-02-10-1
 petrol_station.patches.seed_parent_tank_warehouse #2026-02-06
