@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class ShiftOpeningMeterReading(Document):
+class ClosingTankDip(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -14,16 +14,15 @@ class ShiftOpeningMeterReading(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		employee: DF.Link
-		expected_reading: DF.Float
-		is_opening: DF.Check
-		nozzle: DF.Link
-		opening_reading: DF.Float
+		book_stock: DF.Float
+		opening: DF.Float
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		pump: DF.Link
+		physical_dip_mm: DF.Float
+		physical_liters: DF.Float
 		tank: DF.Link
+		variation: DF.Float
 	# end: auto-generated types
 
 	pass

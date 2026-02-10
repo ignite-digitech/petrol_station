@@ -7,16 +7,17 @@
  "engine": "InnoDB",
  "field_order": [
   "shift_type",
+  "supervisor",
+  "posting_datetime",
+  "company",
+  "column_break_esun",
   "posting_date",
   "posting_time",
-  "posting_datetime",
-  "column_break_esun",
-  "supervisor",
-  "attendant",
+  "status",
   "section_break_mdmu",
   "opening_meter_readings",
+  "selling_prices",
   "opening_balances",
-  "dip_readings",
   "deliveries",
   "section_break_ba5t",
   "amended_from"
@@ -52,15 +53,8 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Supervisor",
-   "options": "Employee"
-  },
-  {
-   "fieldname": "attendant",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Attendant",
-   "options": "Employee"
+   "options": "Employee",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_mdmu",
@@ -80,41 +74,60 @@
    "options": "POS Opening Entry Detail"
   },
   {
-   "fieldname": "dip_readings",
-   "fieldtype": "Table",
-   "label": "Dip Readings",
-   "options": "Dip Reading Detail",
-   "read_only": 1
-  },
-  {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
    "reqd": 1
   },
   {
+   "default": "Now",
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting time",
    "reqd": 1
   },
   {
+   "default": "Now",
    "fieldname": "posting_datetime",
    "fieldtype": "Datetime",
-   "label": "Posting Datetime"
+   "label": "Posting Datetime",
+   "reqd": 1
   },
   {
    "fieldname": "deliveries",
    "fieldtype": "Table",
    "label": "Fuel Deliveries",
    "options": "Fuel Delivery"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nOpen\nClosed\nCancelled"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "selling_prices",
+   "fieldtype": "Table",
+   "label": "Selling Prices",
+   "options": "Shift Opening Fuel Price",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-10 09:37:00.828018",
+ "modified": "2026-02-10 15:36:37.825327",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Shift Opening Entry",

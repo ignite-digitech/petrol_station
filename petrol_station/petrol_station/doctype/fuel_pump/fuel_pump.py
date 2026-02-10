@@ -72,7 +72,8 @@ class FuelPump(Document):
 			for i in range(existing_count + 1, required_count + 1):
 				nozzle = frappe.get_doc({
 					"doctype": "Pump Nozzle",
-					"pump": self.name
+					"pump": self.name,
+					"fuel_item": self.fuel_item,
 				})
 				nozzle.insert()
 

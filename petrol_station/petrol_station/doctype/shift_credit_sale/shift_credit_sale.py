@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-class ShiftOpeningMeterReading(Document):
+class ShiftCreditSale(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
 
@@ -14,16 +14,15 @@ class ShiftOpeningMeterReading(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		employee: DF.Link
-		expected_reading: DF.Float
-		is_opening: DF.Check
-		nozzle: DF.Link
-		opening_reading: DF.Float
+		amount: DF.Currency
+		customer: DF.Link
+		fuel_item: DF.Link
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-		pump: DF.Link
-		tank: DF.Link
+		qty: DF.Float
+		rate: DF.Float
+		vehicle_reg_no: DF.Data
 	# end: auto-generated types
 
 	pass

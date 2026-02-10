@@ -1,0 +1,269 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:SCE-{MM}-{YYYY}-{######}",
+ "creation": "2026-02-10 10:54:10.301120",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "period_details_section",
+  "period_start_date",
+  "period_end_date",
+  "column_break_lmfr",
+  "posting_date",
+  "posting_time",
+  "shift_opening_entry",
+  "user_detials_section",
+  "company",
+  "column_break_ovlw",
+  "supervisor",
+  "fuel_meter_readings_section",
+  "meter_readings",
+  "section_break_kaqp",
+  "column_break_uhfj",
+  "total_returns",
+  "column_break_lrqh",
+  "total_qty",
+  "total_meter_sales",
+  "payments_tab",
+  "modes_of_payment_section",
+  "payment_reconciliation",
+  "credit_sales",
+  "total_credit_sales",
+  "section_break_gunj",
+  "amended_from",
+  "tank_dip_tab",
+  "table_ojzv",
+  "summaries_tab",
+  "total_shift_revenue",
+  "total_variation_l",
+  "column_break_lvff",
+  "managers_comments"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_gunj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Shift Closing Entry",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "period_end_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Period End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_lmfr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting date",
+   "reqd": 1
+  },
+  {
+   "default": "Now",
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "shift_opening_entry",
+   "fieldtype": "Link",
+   "label": "Shift Opening Entry",
+   "link_filters": "[[\"Shift Opening Entry\",\"status\",\"=\",\"Open\"],[\"Shift Opening Entry\",\"docstatus\",\"=\",\"1\"]]",
+   "options": "Shift Opening Entry",
+   "reqd": 1
+  },
+  {
+   "fieldname": "period_details_section",
+   "fieldtype": "Section Break",
+   "label": "Period Details"
+  },
+  {
+   "fetch_from": "shift_opening_entry.posting_datetime",
+   "fieldname": "period_start_date",
+   "fieldtype": "Datetime",
+   "label": "Period Start Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "user_detials_section",
+   "fieldtype": "Section Break",
+   "label": "User Detials"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ovlw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "shift_opening_entry.supervisor",
+   "fieldname": "supervisor",
+   "fieldtype": "Link",
+   "label": "Supervisor",
+   "options": "Employee",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "fuel_meter_readings_section",
+   "fieldtype": "Section Break",
+   "label": "Fuel Meter Readings"
+  },
+  {
+   "fieldname": "section_break_kaqp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_uhfj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_lrqh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_qty",
+   "fieldtype": "Float",
+   "label": "Total Meter Qty",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_returns",
+   "fieldtype": "Float",
+   "label": "Total Returns",
+   "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_meter_sales",
+   "fieldtype": "Currency",
+   "label": "Total Meter Sales"
+  },
+  {
+   "fieldname": "modes_of_payment_section",
+   "fieldtype": "Section Break",
+   "label": "Modes of Payment"
+  },
+  {
+   "fieldname": "payment_reconciliation",
+   "fieldtype": "Table",
+   "label": "Payment Reconciliation",
+   "options": "POS Closing Entry Detail",
+   "reqd": 1
+  },
+  {
+   "fieldname": "payments_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payments"
+  },
+  {
+   "fieldname": "credit_sales",
+   "fieldtype": "Table",
+   "label": "Credit Sales",
+   "options": "Shift Credit Sale"
+  },
+  {
+   "fieldname": "tank_dip_tab",
+   "fieldtype": "Tab Break",
+   "label": "Tank Dip"
+  },
+  {
+   "fieldname": "table_ojzv",
+   "fieldtype": "Table",
+   "options": "Closing Tank Dip"
+  },
+  {
+   "fieldname": "summaries_tab",
+   "fieldtype": "Tab Break",
+   "label": "Summary"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_shift_revenue",
+   "fieldtype": "Currency",
+   "label": "Total Shift Revenue",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_variation_l",
+   "fieldtype": "Float",
+   "label": "Total Variation (L)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_lvff",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "managers_comments",
+   "fieldtype": "Small Text",
+   "label": "Manager's Comments"
+  },
+  {
+   "fieldname": "meter_readings",
+   "fieldtype": "Table",
+   "options": "Closing Meter Reading"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_credit_sales",
+   "fieldtype": "Currency",
+   "label": "Total Credit Sales",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-02-10 17:36:16.801862",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Shift Closing Entry",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

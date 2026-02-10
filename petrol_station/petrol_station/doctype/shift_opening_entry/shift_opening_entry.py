@@ -20,46 +20,48 @@ class ShiftOpeningEntry(Document):
 	if TYPE_CHECKING:
 		from erpnext.accounts.doctype.pos_opening_entry_detail.pos_opening_entry_detail import POSOpeningEntryDetail
 		from frappe.types import DF
-		from petrol_station.petrol_station.doctype.dip_reading_detail.dip_reading_detail import DipReadingDetail
 		from petrol_station.petrol_station.doctype.fuel_delivery.fuel_delivery import FuelDelivery
+		from petrol_station.petrol_station.doctype.shift_opening_fuel_price.shift_opening_fuel_price import ShiftOpeningFuelPrice
 		from petrol_station.petrol_station.doctype.shift_opening_meter_reading.shift_opening_meter_reading import ShiftOpeningMeterReading
 
 		amended_from: DF.Link | None
-		attendant: DF.Link | None
+		company: DF.Link
 		deliveries: DF.Table[FuelDelivery]
-		dip_readings: DF.Table[DipReadingDetail]
 		opening_balances: DF.Table[POSOpeningEntryDetail]
 		opening_meter_readings: DF.Table[ShiftOpeningMeterReading]
 		posting_date: DF.Date
-		posting_datetime: DF.Datetime | None
+		posting_datetime: DF.Datetime
 		posting_time: DF.Time
+		selling_prices: DF.Table[ShiftOpeningFuelPrice]
 		shift_type: DF.Literal["Day", "Night"]
-		supervisor: DF.Link | None
+		status: DF.Literal["Draft", "Open", "Closed", "Cancelled"]
+		supervisor: DF.Link
 	# end: auto-generated types
 
 	def onload(self):
-		date = today()
-		if self.posting_date:
-			date = self.posting_date
-
-		try:
-			tank_reading = get_tank_dip_logs_by_date(date)
-			self.dip_readings = []
-			for tank in tank_reading:
-				self.append("dip_readings", {
-					"tank": tank.get("tank"),
-					"dip_log_id": tank.get("name"),
-					"opening_reading": tank.get("opening_dip"),
-					"physical_reading": tank.get("physical_liters")
-				})
-
-		except Exception as e:
-			frappe.log_error(title="Error in fetching tank dip logs", message=e)
+		pass
+		# date = today()
+		# if self.posting_date:
+		# 	date = self.posting_date
+		#
+		# try:
+		# 	tank_reading = get_tank_dip_logs_by_date(date)
+		# 	self.dip_readings = []
+		# 	for tank in tank_reading:
+		# 		self.append("dip_readings", {
+		# 			"tank": tank.get("tank"),
+		# 			"dip_log_id": tank.get("name"),
+		# 			"opening_reading": tank.get("opening_dip"),
+		# 			"physical_reading": tank.get("physical_liters")
+		# 		})
+		#
+		# except Exception as e:
+		# 	frappe.log_error(title="Error in fetching tank dip logs", message=e)
 
 	def on_submit(self):
+		self.status = "Open"
 		self.create_pump_meter_readings_from_opening_readings()
 		self.create_purchase_receipts_from_deliveries()
-
 
 	def validate(self):
 		self.validate_dip_logs_existence()
@@ -232,5 +234,205 @@ class ShiftOpeningEntry(Document):
 				pr.cancel()
 
 		return len(pr_names)
+
+
+@frappe.whitelist()
+def get_item_price_from_shift(item_code, shift_opening_entry=None, posting_date=None):
+	"""
+	Get item price from Shift Opening Entry's selling prices list.
+	Falls back to the latest Item Price if not found in shift.
+
+	Args:
+		item_code (str): Item code
+		shift_opening_entry (str, optional): Shift Opening Entry name
+		posting_date (str, optional): Posting date for finding active shift
+
+	Returns:
+		dict: Contains price and source information
+			{
+				"price": float,
+				"source": "Shift Opening Entry" | "Item Price",
+				"shift_name": str (if from shift)
+			}
+	"""
+	price_info = {
+		"price": 0,
+		"source": None,
+		"shift_name": None
+	}
+
+	if not item_code:
+		return price_info
+
+	# Try to get price from Shift Opening Entry
+	if shift_opening_entry:
+		# Get price from specific shift
+		price = get_price_from_shift_entry(shift_opening_entry, item_code)
+		if price:
+			price_info["price"] = price
+			price_info["source"] = "Shift Opening Entry"
+			price_info["shift_name"] = shift_opening_entry
+			return price_info
+
+	elif posting_date:
+		# Find active shift for the posting date
+		active_shift = get_active_shift_for_date(posting_date)
+		if active_shift:
+			price = get_price_from_shift_entry(active_shift, item_code)
+			if price:
+				price_info["price"] = price
+				price_info["source"] = "Shift Opening Entry"
+				price_info["shift_name"] = active_shift
+				return price_info
+
+	# Fallback to latest Item Price
+	from petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading import get_selling_price
+
+	price = get_selling_price(item_code)
+	if price:
+		price_info["price"] = price
+		price_info["source"] = "Item Price"
+
+	return price_info
+
+
+def get_price_from_shift_entry(shift_name, item_code):
+	"""
+	Get price for an item from a specific Shift Opening Entry's selling prices.
+
+	Args:
+		shift_name (str): Shift Opening Entry name
+		item_code (str): Item code
+
+	Returns:
+		float: Price or None if not found
+	"""
+	price = frappe.db.get_value(
+		"Shift Opening Fuel Price",
+		{
+			"parent": shift_name,
+			"parenttype": "Shift Opening Entry",
+			"fuel_item": item_code
+		},
+		"rate"
+	)
+
+	return price
+
+
+def get_active_shift_for_date(posting_date):
+	"""
+	Get the active (Open) Shift Opening Entry for a given date.
+
+	Args:
+		posting_date (str): Date to find active shift
+
+	Returns:
+		str: Shift Opening Entry name or None
+	"""
+	shift = frappe.db.get_value(
+		"Shift Opening Entry",
+		{
+			"posting_date": posting_date,
+			"docstatus": 1,
+			"status": "Open"
+		},
+		"name",
+		order_by="posting_datetime desc"
+	)
+
+	return shift
+
+
+@frappe.whitelist()
+def get_opening_balances_with_expected(shift_opening_entry, total_sales=None, payments=None, credit_sales=None):
+	"""
+	Get opening balances from Shift Opening Entry with optional expected cash calculation.
+
+	Args:
+		shift_opening_entry (str): Shift Opening Entry name
+		total_sales (float, optional): Total sales amount for calculating expected cash
+		payments (dict/str, optional): Dictionary of other payment modes and amounts
+			Example: {"mtn": 1000, "airtel": 1200, "credit": 6000}
+
+	Returns:
+		list: Opening balances with additional 'expected' field for cash
+			[
+				{
+					"mode_of_payment": "Cash",
+					"opening_amount": 5000.00,
+					"expected": 8800.00  # Only for cash if total_sales provided
+				},
+				{
+					"mode_of_payment": "MTN Mobile Money",
+					"opening_amount": 0.00
+				}
+			]
+	"""
+	from frappe.utils import flt
+	import json
+
+	if credit_sales is None:
+		credit_sales = 0
+
+	if not shift_opening_entry:
+		frappe.throw("Shift Opening Entry is required")
+
+	# Parse payments if it's a JSON string
+	if payments and isinstance(payments, str):
+		payments = json.loads(payments)
+
+	# Fetch the shift document
+	shift_doc = frappe.get_doc("Shift Opening Entry", shift_opening_entry)
+
+	if not shift_doc.opening_balances:
+		return []
+
+	# Convert opening balances to list of dicts
+	balances = []
+	for balance in shift_doc.opening_balances:
+		balance_dict = {
+			"mode_of_payment": balance.mode_of_payment,
+			"opening_amount": flt(balance.opening_amount)
+		}
+
+		# Calculate expected cash if total_sales is provided
+		if total_sales and payments:
+			# Check if this is a cash mode of payment
+			mode_lower = balance.mode_of_payment.lower()
+			if "cash" in mode_lower:
+				# Calculate expected cash
+				# expected_cash = total_sales - sum(all other payments)
+				total_other_payments = sum(flt(amount) for amount in payments.values())
+				expected_cash = flt(total_sales) - total_other_payments - flt(credit_sales)
+
+				balance_dict["expected"] = expected_cash
+
+		if total_sales and payments == {}:
+			balance_dict["expected"] = flt(total_sales) - flt(credit_sales)
+
+		balances.append(balance_dict)
+
+		return balances
+
+
+@frappe.whitelist()
+def get_opening_balances(shift_opening_entry):
+	"""
+	Simple method to get opening balances from Shift Opening Entry.
+
+	Args:
+		shift_opening_entry (str): Shift Opening Entry name
+
+	Returns:
+		list: Opening balances
+			[
+				{
+					"mode_of_payment": "Cash",
+					"opening_amount": 5000.00
+				}
+			]
+	"""
+	return get_opening_balances_with_expected(shift_opening_entry)
 
 

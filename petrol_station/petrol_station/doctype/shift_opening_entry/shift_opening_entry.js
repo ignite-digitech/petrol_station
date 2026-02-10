@@ -78,3 +78,29 @@ frappe.ui.form.on("Shift Opening Meter Reading", {
 		}
 	}
 });
+
+frappe.ui.form.on("Shift Opening Fuel Price", {
+	fuel_item(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+
+		if (row.fuel_item) {
+			// Auto-fetch the selling price for this fuel item
+			frappe.call({
+				method: 'petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading.get_selling_price',
+				args: {
+					item_code: row.fuel_item
+				},
+				freeze: true,
+				freeze_message: __('Fetching selling price for {0}', [row.fuel_item]),
+				callback: function(r) {
+					if (r.message) {
+						console.log(r.message);
+						frappe.model.set_value(cdt, cdn, 'rate', r.message);
+
+						frm.refresh_field("selling_prices");
+					}
+				}
+			});
+		}
+	}
+});

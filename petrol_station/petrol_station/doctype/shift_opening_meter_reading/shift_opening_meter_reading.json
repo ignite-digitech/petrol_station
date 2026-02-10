@@ -11,7 +11,8 @@
   "tank",
   "expected_reading",
   "opening_reading",
-  "is_opening"
+  "is_opening",
+  "employee"
  ],
  "fields": [
   {
@@ -61,13 +62,21 @@
    "hidden": 1,
    "label": "is_opening",
    "read_only": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-09 12:27:05.538066",
+ "modified": "2026-02-10 12:21:31.477922",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Shift Opening Meter Reading",

@@ -40,6 +40,14 @@ custom_fields = {
             "options": "Shift Opening Entry",
             "read_only": 1,
         }
+    ],
+    "Customer": [
+        {
+            "fieldname": "vehicle_reg_no",
+            "label": "Vehicle Registration No",
+            "insert_after": "customer_type",
+            "fieldtype": "Data"
+        }
     ]
 }
 

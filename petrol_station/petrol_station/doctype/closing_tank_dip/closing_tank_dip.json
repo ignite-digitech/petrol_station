@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-10 13:11:39.375584",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "tank",
+  "opening",
+  "physical_dip_mm",
+  "physical_liters",
+  "book_stock",
+  "variation"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "tank",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tank",
+   "link_filters": "[[\"Warehouse\",\"warehouse_type\",\"=\",\"Fuel Tank\"],[\"Warehouse\",\"is_group\",\"=\",0]]",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "opening",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Opening",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "physical_dip_mm",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Physical Dip (mm)",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "physical_liters",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Physical Liters",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "book_stock",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Book Stock",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "variation",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Wet Loss/Variation",
+   "non_negative": 1,
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-10 13:22:39.103233",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Closing Tank Dip",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

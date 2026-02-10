@@ -6,6 +6,18 @@ from frappe.model.document import Document
 
 
 class PumpNozzle(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		fuel_item: DF.Link | None
+		pump: DF.Link
+	# end: auto-generated types
+
 	def autoname(self):
 		"""Generate unique nozzle name in format: {pump}-{number}"""
 		if not self.pump:

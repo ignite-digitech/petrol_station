@@ -17,6 +17,7 @@ class PumpMeterReading(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		attendant: DF.Link | None
 		closing_qty: DF.Float
 		employee: DF.Link | None
 		fuel_item: DF.Link
@@ -113,6 +114,7 @@ def create_pump_meter_reading(data: PumpMeterReadingData):
 	return pump_meter_reading
 
 
+@frappe.whitelist()
 def get_selling_price(item_code, price_list=None, customer=None):
 	"""
 	Get selling price for an item from Item Price.

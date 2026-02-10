@@ -5,7 +5,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "pump"
+  "pump",
+  "fuel_item"
  ],
  "fields": [
   {
@@ -15,12 +16,19 @@
    "label": "Pump",
    "options": "Fuel Pump",
    "reqd": 1
+  },
+  {
+   "fetch_from": "pump.fuel_item",
+   "fieldname": "fuel_item",
+   "fieldtype": "Link",
+   "label": "Fuel Item",
+   "options": "Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-06 15:58:05.583666",
+ "modified": "2026-02-10 15:28:54.754086",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Pump Nozzle",
