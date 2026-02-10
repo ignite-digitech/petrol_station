@@ -14,13 +14,17 @@
   "posting_date",
   "posting_time",
   "status",
+  "readings_tab",
   "section_break_mdmu",
   "opening_meter_readings",
+  "tank_dips",
+  "section_break_ba5t",
+  "amended_from",
+  "pricing_tab",
   "selling_prices",
   "opening_balances",
-  "deliveries",
-  "section_break_ba5t",
-  "amended_from"
+  "stock_tab",
+  "deliveries"
  ],
  "fields": [
   {
@@ -121,13 +125,34 @@
    "label": "Selling Prices",
    "options": "Shift Opening Fuel Price",
    "reqd": 1
+  },
+  {
+   "fieldname": "tank_dips",
+   "fieldtype": "Table",
+   "label": "Tank Dips",
+   "options": "Shift Tank Dip"
+  },
+  {
+   "fieldname": "readings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Readings"
+  },
+  {
+   "fieldname": "pricing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Pricing & Cash"
+  },
+  {
+   "fieldname": "stock_tab",
+   "fieldtype": "Tab Break",
+   "label": "Stock"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-10 15:36:37.825327",
+ "modified": "2026-02-10 20:16:47.477739",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Shift Opening Entry",

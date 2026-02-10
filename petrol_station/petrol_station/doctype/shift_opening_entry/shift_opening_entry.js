@@ -104,3 +104,26 @@ frappe.ui.form.on("Shift Opening Fuel Price", {
 		}
 	}
 });
+
+frappe.ui.form.on("Shift Tank Dip", {
+    tank(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+
+        if (row.tank) {
+            frappe.call({
+                method: "petrol_station.petrol_station.doctype.tank_dip_log.tank_dip_log.get_last_closing_book_balance",
+                args: {
+                    tank: row.tank
+                },
+                freeze: true,
+                freeze_message: __('Fetching last closing reading for {0}', [frm.doc.tank]),
+                callback: function (r) {
+                    if (r.message) {
+                        frappe.model.set_value(cdt, cdn, 'opening', r.message);
+                    }
+                }
+            })
+        }
+    }
+
+})

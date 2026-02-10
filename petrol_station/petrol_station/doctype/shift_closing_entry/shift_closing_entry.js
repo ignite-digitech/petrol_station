@@ -279,7 +279,7 @@ function calculate_payment_difference(frm, cdt, cdn) {
 	}
 }
 
-frappe.ui.form.on("Closing Tank Dip", {
+frappe.ui.form.on("Shift Tank Dip", {
     tank(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
 

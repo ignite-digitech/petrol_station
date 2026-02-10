@@ -23,6 +23,7 @@ class ShiftOpeningEntry(Document):
 		from petrol_station.petrol_station.doctype.fuel_delivery.fuel_delivery import FuelDelivery
 		from petrol_station.petrol_station.doctype.shift_opening_fuel_price.shift_opening_fuel_price import ShiftOpeningFuelPrice
 		from petrol_station.petrol_station.doctype.shift_opening_meter_reading.shift_opening_meter_reading import ShiftOpeningMeterReading
+		from petrol_station.petrol_station.doctype.shift_tank_dip.shift_tank_dip import ShiftTankDip
 
 		amended_from: DF.Link | None
 		company: DF.Link
@@ -36,6 +37,7 @@ class ShiftOpeningEntry(Document):
 		shift_type: DF.Literal["Day", "Night"]
 		status: DF.Literal["Draft", "Open", "Closed", "Cancelled"]
 		supervisor: DF.Link
+		tank_dips: DF.Table[ShiftTankDip]
 	# end: auto-generated types
 
 	def onload(self):
