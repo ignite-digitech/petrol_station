@@ -31,3 +31,19 @@ class PumpNozzle(Document):
 
 		# Set the name
 		self.name = f"{self.pump}-{next_number}"
+
+	def get_tank(self):
+		if self.pump:
+			return frappe.db.get_value("Fuel Pump", {"name": self.pump}, "tank")
+		else:
+			frappe.throw(msg="Please configure pump first, attach tank")
+			return None
+
+
+@frappe.whitelist()
+def get_tank(nozzle: str | Document | PumpNozzle):
+	if isinstance(nozzle, str):
+		nozzle = frappe.get_doc("Pump Nozzle", nozzle)
+
+	return nozzle.get_tank()
+

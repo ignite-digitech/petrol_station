@@ -15,7 +15,8 @@
   "sales_qty",
   "unit_price",
   "total_amount",
-  "attendant"
+  "attendant",
+  "tank"
  ],
  "fields": [
   {
@@ -96,13 +97,21 @@
    "label": "Fuel Item",
    "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Fuel\"]]",
    "options": "Item"
+  },
+  {
+   "fieldname": "tank",
+   "fieldtype": "Link",
+   "label": "Tank",
+   "options": "Warehouse",
+   "read_only": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-11 12:42:31.095819",
+ "modified": "2026-02-11 13:07:11.309288",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Closing Meter Reading",

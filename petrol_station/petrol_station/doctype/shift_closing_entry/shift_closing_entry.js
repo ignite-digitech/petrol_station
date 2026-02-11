@@ -58,7 +58,7 @@ frappe.ui.form.on("Closing Meter Reading", {
 						frappe.model.set_value(cdt, cdn, 'opening', r.message.opening_reading);
 					}
 				}
-			}); 
+			});
 
             frappe.db.get_value("Pump Nozzle", row.nozzle, "fuel_item", (r) => {
                 frappe.call({
@@ -73,6 +73,17 @@ frappe.ui.form.on("Closing Meter Reading", {
                     }
                 })
             })
+
+			frappe.call({
+				method: "petrol_station.petrol_station.doctype.pump_nozzle.pump_nozzle.get_tank",
+				args: {
+					nozzle: row.nozzle
+				},
+				callback: function (r){
+					console.log(r.message)
+					frappe.model.set_value(cdt, cdn, 'tank', r.message)
+				}
+			})
 		}
 	},
 
@@ -163,8 +174,12 @@ function calculate_total_credit_sale(frm) {
 function calculate_sales_qty(frm, cdt, cdn) {
 	let row = locals[cdt][cdn];
 
+	let sales_qty = 0
+
 	// Calculate sales_qty = closing - opening - return_to_tank
-	let sales_qty = (flt(row.opening) - flt(row.closing) - flt(row.return_to_tank));
+	if (flt(row.closing) > 0 || flt(row.return_to_tank) > 0){
+		sales_qty = (flt(row.opening) - flt(row.closing) - flt(row.return_to_tank));
+	}
 
 	// Ensure non-negative
 	sales_qty = Math.max(sales_qty, 0);
@@ -302,7 +317,16 @@ frappe.ui.form.on("Shift Tank Dip", {
                 }
             })
         }
-    }
+    },
+	physical_liters(frm, cdt, cdn){
+		let row = locals[cdt][cdn]
+
+		if (row.physical_liters){
+			let book_stock = flt(row.opening)
+
+			frappe.model.set_value(cdt, cdn, 'book_stock', book_stock)
+		}
+	}
 
 })
 

@@ -24,6 +24,7 @@ class ClosingMeterReading(Document):
 		parenttype: DF.Data
 		return_to_tank: DF.Float
 		sales_qty: DF.Float
+		tank: DF.Link
 		total_amount: DF.Currency
 		unit_price: DF.Currency
 	# end: auto-generated types

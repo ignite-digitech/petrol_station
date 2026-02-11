@@ -15,13 +15,13 @@ class ShiftClosingEntry(Document):
 		from erpnext.accounts.doctype.pos_closing_entry_detail.pos_closing_entry_detail import POSClosingEntryDetail
 		from frappe.types import DF
 		from petrol_station.petrol_station.doctype.closing_meter_reading.closing_meter_reading import ClosingMeterReading
-		from petrol_station.petrol_station.doctype.closing_tank_dip.closing_tank_dip import ClosingTankDip
+		from petrol_station.petrol_station.doctype.shift_tank_dip.shift_tank_dip import ShiftTankDip
 		from petrol_station.petrol_station.doctype.shift_credit_sale.shift_credit_sale import ShiftCreditSale
 
 		amended_from: DF.Link | None
 		company: DF.Link
 		credit_sales: DF.Table[ShiftCreditSale]
-		dip_readings: DF.Table[ClosingTankDip]
+		dip_readings: DF.Table[ShiftTankDip]
 		managers_comments: DF.SmallText | None
 		meter_readings: DF.Table[ClosingMeterReading]
 		payment_reconciliation: DF.Table[POSClosingEntryDetail]
@@ -39,4 +39,5 @@ class ShiftClosingEntry(Document):
 		total_variation_l: DF.Float
 	# end: auto-generated types
 
-	pass
+	def on_submit(self):
+		pass
