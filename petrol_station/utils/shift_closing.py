@@ -6,6 +6,10 @@ from petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading
     create_pump_meter_reading,
     PumpMeterReadingData
 )
+from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import (
+    create_fuel_ledger,
+    FuelLedgerData
+)
 
 
 def prepare_invoices_from_readings(doc: Document | ShiftClosingEntry | str):
@@ -284,4 +288,57 @@ def create_sales_invoices_from_credit_sales(doc: Document | ShiftClosingEntry | 
         })
 
     return created_invoices
+
+
+def create_fuel_ledgers_from_dip_readings(doc: Document | ShiftClosingEntry | str):
+    """
+    Create Fuel Ledger documents from Shift Closing Entry dip readings.
+
+    Args:
+        doc (Document | ShiftClosingEntry | str): Shift Closing Entry document or name
+
+    Returns:
+        list: List of created Fuel Ledger documents
+
+    Raises:
+        frappe.ValidationError: If no dip readings exist
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    if not doc.dip_readings:
+        frappe.throw(
+            "No dip readings found to create Fuel Ledgers.",
+            frappe.ValidationError
+        )
+
+    created_ledgers = []
+
+    for dip_reading in doc.dip_readings:
+        # Create FuelLedgerData dataclass instance
+        ledger_data = FuelLedgerData(
+            fuel_item=dip_reading.fuel_item,
+            fuel_tank=dip_reading.tank,
+            opening_book_balance=dip_reading.opening or 0,
+            physical_dip_reading_liters=dip_reading.physical_liters,
+            posting_date=doc.posting_date,
+            posting_time=doc.posting_time,
+            posting_datetime=doc.period_start_date,
+            liters_in=0,
+            liters_out=0,
+            return_to_tank=0,
+            physical_dip_reading_mm=dip_reading.physical_dip_mm,
+            conversion_factor=None,
+            water_level_mm=None,
+            voucher_type="Shift Closing Entry",
+            voucher_no=doc.name,
+            voucher_detail_no=dip_reading.name,
+            shortage_status="Normal"
+        )
+
+        # Create the Fuel Ledger
+        fuel_ledger = create_fuel_ledger(ledger_data)
+        created_ledgers.append(fuel_ledger)
+
+    return created_ledgers
 
