@@ -23,7 +23,7 @@ class ShiftCreditSale(Document):
 		parenttype: DF.Data
 		qty: DF.Float
 		rate: DF.Float
-		vehicle_reg_no: DF.Data
+		vehicle_reg_no: DF.Data | None
 	# end: auto-generated types
 
 	pass

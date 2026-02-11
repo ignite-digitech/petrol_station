@@ -322,12 +322,56 @@ frappe.ui.form.on("Shift Tank Dip", {
 		let row = locals[cdt][cdn]
 
 		if (row.physical_liters){
-			let book_stock = flt(row.opening)
-
+			let book_stock = get_book_stock(row.tank, row.opening)
 			frappe.model.set_value(cdt, cdn, 'book_stock', book_stock)
+
+			let variation = calculate_dip_variation(cdt, cdn)
+			frappe.model.set_value(cdt, cdn, 'variation', variation)
 		}
 	}
 
 })
+
+function calculate_dip_variation(cdt, cdn){
+	let row = locals[cdt][cdn]
+
+	let variation = 0
+	if(row.physical_liters){
+		variation = flt(row.opening) - flt(row.physical_liters)
+	}
+
+	variation = Math.max(variation, 0);
+
+	return variation
+
+}
+
+function get_book_stock(tank, opening){
+	let totals = get_sales_qty_sum_for_tank(tank)
+	return flt(opening) - flt(totals.sales_qty) - flt(totals.returns)
+}
+
+function get_sales_qty_sum_for_tank(tank) {
+	let total_sales_qty = 0;
+	let total_returns = 0
+
+
+	if (cur_frm.doc.meter_readings) {
+		cur_frm.doc.meter_readings.forEach(function(row) {
+			if (row.tank === tank) {
+				total_sales_qty += flt(row.sales_qty);
+				total_returns += flt(row.return_to_tank)
+			}
+		});
+	}
+
+	total_sales_qty = Math.max(total_sales_qty, 0);
+	total_returns = Math.max(total_returns, 0);
+
+	return {
+		sales_qty: total_sales_qty,
+		returns: total_returns
+	};
+}
 
 
