@@ -207,3 +207,81 @@ def create_pump_meter_readings_from_closing(doc: Document | ShiftClosingEntry | 
 
     return created_readings
 
+
+def create_sales_invoices_from_credit_sales(doc: Document | ShiftClosingEntry | str):
+    """
+    Create Sales Invoices from credit sales entries in Shift Closing Entry.
+
+    Args:
+        doc (Document | ShiftClosingEntry | str): Shift Closing Entry document or name
+
+    Returns:
+        list: List of created and submitted Sales Invoice documents
+            [
+                {
+                    "name": "SINV-00001",
+                    "customer": "Customer Name",
+                    "grand_total": 10000.0
+                }
+            ]
+
+    Raises:
+        frappe.ValidationError: If no credit sales exist
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    if not doc.credit_sales:
+        frappe.throw(
+            "No credit sales found to create Sales Invoices.",
+            frappe.ValidationError
+        )
+
+    created_invoices = []
+
+    # Group credit sales by customer and attendant
+    customer_attendant_sales = {}
+    for sale in doc.credit_sales:
+        key = (sale.customer, sale.attendant)
+        if key not in customer_attendant_sales:
+            customer_attendant_sales[key] = []
+        customer_attendant_sales[key].append(sale)
+
+    # Create a Sales Invoice for each customer-attendant combination
+    for (customer, attendant), sales in customer_attendant_sales.items():
+        # Prepare invoice data
+        invoice_data = {
+            "doctype": "Sales Invoice",
+            "customer": customer,
+            "posting_date": doc.posting_date,
+            "posting_time": doc.posting_time,
+            "set_posting_time": 1,
+            "company": doc.company,
+            "items": [],
+            "attendant": attendant
+        }
+
+        # Add items for this customer-attendant combination
+        for sale in sales:
+            invoice_data["items"].append({
+                "item_code": sale.fuel_item,
+                "qty": sale.qty,
+                "rate": sale.rate,
+                "amount": sale.amount,
+                "ref_shift": doc.name,
+            })
+
+        # Create Sales Invoice
+        sales_invoice = frappe.get_doc(invoice_data)
+        sales_invoice.flags.ignore_permissions = True
+        sales_invoice.insert()
+        sales_invoice.submit()
+
+        created_invoices.append({
+            "name": sales_invoice.name,
+            "customer": sales_invoice.customer,
+            "grand_total": sales_invoice.grand_total
+        })
+
+    return created_invoices
+
