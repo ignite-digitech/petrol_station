@@ -54,3 +54,12 @@ class ShiftClosingEntry(Document):
 			frappe.log_error(message=frappe.get_traceback(), title="Shift Closing Entry Submission Error")
 			frappe.throw(msg=str(e))
 
+	def on_cancel(self):
+		from petrol_station.utils import (cancel_invoices_from_shift_closing,
+		                                  cancel_fuel_ledgers,
+		                                  cancel_pump_meter_readings)
+		cancel_invoices_from_shift_closing(self)
+		cancel_fuel_ledgers(self)
+		cancel_pump_meter_readings(self)
+
+

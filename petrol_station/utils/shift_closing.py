@@ -8,7 +8,7 @@ from petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading
 )
 from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import (
     create_fuel_ledger,
-    FuelLedgerData
+    FuelLedgerData, cancel_fuel_ledgers_by_voucher
 )
 
 
@@ -341,4 +341,97 @@ def create_fuel_ledgers_from_dip_readings(doc: Document | ShiftClosingEntry | st
         created_ledgers.append(fuel_ledger)
 
     return created_ledgers
+
+
+def cancel_invoices_from_shift_closing(doc: Document | ShiftClosingEntry | str):
+    """
+    Cancel all Sales Invoices created from a Shift Closing Entry.
+
+    Args:
+        doc (Document | ShiftClosingEntry | str): Shift Closing Entry document or name
+
+    Returns:
+        list: List of cancelled Sales Invoice names
+            ["SINV-00001", "SINV-00002"]
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    # Find all Sales Invoices linked to this shift closing entry
+    invoice_items = frappe.get_all(
+        "Sales Invoice Item",
+        filters={
+            "ref_shift": doc.name
+        },
+        pluck="parent",
+    )
+
+    cancelled_invoices = []
+
+    for invoice in invoice_items:
+        # Check if any item in this invoice has ref_shift matching this shift closing entry
+        invoice_doc = frappe.get_doc("Sales Invoice", invoice)
+
+        try:
+            invoice_doc.flags.ignore_permissions = True
+            if invoice_doc.docstatus == 1:
+                invoice_doc.cancel()
+                cancelled_invoices.append(invoice_doc.name)
+        except Exception as e:
+            frappe.log_error(
+                title=f"Error Cancelling Invoice {invoice_doc.name}",
+                message=str(e)
+            )
+
+    return cancelled_invoices
+
+def cancel_pump_meter_readings(doc: Document | ShiftClosingEntry | str):
+    """
+    Cancel all Pump Meter Reading entries linked to a Shift Closing Entry.
+    Marks pump meter readings as cancelled (is_cancelled = 1).
+
+    Args:
+        doc (Document | ShiftClosingEntry | str): Shift Closing Entry document or name
+
+    Returns:
+        int: Number of Pump Meter Readings cancelled
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    # Find all Pump Meter Readings linked to this shift closing entry
+    pump_readings = frappe.get_all(
+        "Pump Meter Reading",
+        filters={
+            "voucher_type": "Shift Closing Entry",
+            "voucher_no": doc.name,
+            "is_cancelled": 0
+        },
+        pluck="name"
+    )
+
+    if not pump_readings:
+        return 0
+
+    # Mark each reading as cancelled
+    for reading_name in pump_readings:
+        reading = frappe.get_doc("Pump Meter Reading", reading_name)
+        reading.is_cancelled = 1
+        reading.save(ignore_permissions=True)
+
+    frappe.db.commit()
+
+    return len(pump_readings)
+
+
+def cancel_fuel_ledgers(doc: Document | ShiftClosingEntry | str):
+    """
+    Cancel all Fuel Ledger entries linked to a Shift Closing Entry.
+    Marks fuel ledgers as cancelled (is_cancelled = 1).
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    cancel_fuel_ledgers_by_voucher(doc.doctype, doc.name)
+
 
