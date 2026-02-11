@@ -15,6 +15,7 @@ class ShiftCreditSale(Document):
 		from frappe.types import DF
 
 		amount: DF.Currency
+		attendant: DF.Link
 		customer: DF.Link
 		fuel_item: DF.Link
 		parent: DF.Data

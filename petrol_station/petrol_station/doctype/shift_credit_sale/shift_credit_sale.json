@@ -11,7 +11,8 @@
   "fuel_item",
   "qty",
   "rate",
-  "amount"
+  "amount",
+  "attendant"
  ],
  "fields": [
   {
@@ -47,6 +48,7 @@
    "reqd": 1
   },
   {
+   "columns": 1,
    "fieldname": "rate",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -61,13 +63,21 @@
    "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Fuel\"]]",
    "options": "Item",
    "reqd": 1
+  },
+  {
+   "fieldname": "attendant",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Attendant",
+   "options": "Employee",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-10 17:28:18.636563",
+ "modified": "2026-02-11 12:39:48.722673",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Shift Credit Sale",

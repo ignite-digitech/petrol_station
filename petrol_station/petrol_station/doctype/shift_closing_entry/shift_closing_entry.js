@@ -15,7 +15,11 @@ frappe.ui.form.on("Shift Closing Entry", {
 		frm.fields_dict.payment_reconciliation.grid.cannot_delete_rows = true;
 		frm.refresh_field('payment_reconciliation');
 	},
-
+	onload(frm){
+		if(frm.doc.shift_opening_entry){
+			update_payment_reconciliation(frm);
+		}
+	},
 	shift_opening_entry(frm) {
 		if (!frm.doc.shift_opening_entry) {
 			frm.toggle_display(['meter_readings'], false);

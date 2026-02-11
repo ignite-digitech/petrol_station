@@ -3,6 +3,14 @@
 
 frappe.ui.form.on("Shift Opening Entry", {
 	refresh(frm) {
+		cur_frm.add_custom_button("Close Shift", () => {
+			frappe.model.open_mapped_doc({
+				method: "petrol_station.petrol_station.doctype.shift_opening_entry.shift_opening_entry.make_shift_closing_entry",
+				frm: frm,
+				// args: { default_supplier: values.default_supplier },
+				run_link_triggers: true,
+			});
+		})
 	}
 });
 

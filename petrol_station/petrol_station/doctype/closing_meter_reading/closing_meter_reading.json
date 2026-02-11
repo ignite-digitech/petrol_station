@@ -19,6 +19,7 @@
  ],
  "fields": [
   {
+   "columns": 1,
    "fieldname": "opening",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -36,6 +37,7 @@
    "reqd": 1
   },
   {
+   "columns": 1,
    "default": "0",
    "fieldname": "return_to_tank",
    "fieldtype": "Float",
@@ -70,10 +72,13 @@
    "read_only": 1
   },
   {
+   "columns": 2,
    "fieldname": "attendant",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Attendant",
-   "options": "Employee"
+   "options": "Employee",
+   "reqd": 1
   },
   {
    "fieldname": "nozzle",
@@ -97,7 +102,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-10 15:31:03.754540",
+ "modified": "2026-02-11 12:42:31.095819",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Closing Meter Reading",

@@ -434,7 +434,7 @@ def get_opening_balances_with_expected(shift_opening_entry, total_sales=None, pa
 
 		balances.append(balance_dict)
 
-		return balances
+	return balances
 
 
 @frappe.whitelist()
@@ -455,5 +455,50 @@ def get_opening_balances(shift_opening_entry):
 			]
 	"""
 	return get_opening_balances_with_expected(shift_opening_entry)
+
+
+@frappe.whitelist()
+def make_shift_closing_entry(source_name, target_doc=None):
+	"""
+	Create a Shift Closing Entry from a Shift Opening Entry using mapper.
+
+	Args:
+		source_name (str): Shift Opening Entry name
+		target_doc (Document, optional): Target document to map into
+
+	Returns:
+		Document: Shift Closing Entry document
+	"""
+	def set_missing_values(source, target):
+		target.shift_opening_entry = source.name
+		target.period_start_date = source.posting_datetime
+
+	doclist = frappe.model.mapper.get_mapped_doc(
+		"Shift Opening Entry",
+		source_name,
+		{
+			"Shift Opening Entry": {
+				"doctype": "Shift Closing Entry",
+				"field_map": {
+					"posting_date": "posting_date",
+					"posting_time": "posting_time",
+					"company": "company",
+					"supervisor": "supervisor",
+				},
+			},
+			"Shift Opening Meter Reading": {
+				"doctype": "Closing Meter Reading",
+				"field_map": {
+					"nozzle": "nozzle",
+					"tank": "tank",
+					"opening_reading": "opening_reading",
+				},
+			}
+		},
+		target_doc,
+		set_missing_values,
+	)
+
+	return doclist
 
 

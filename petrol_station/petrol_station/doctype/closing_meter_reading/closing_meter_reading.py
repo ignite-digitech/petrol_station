@@ -14,7 +14,7 @@ class ClosingMeterReading(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		attendant: DF.Link | None
+		attendant: DF.Link
 		closing: DF.Float
 		fuel_item: DF.Link | None
 		nozzle: DF.Link
