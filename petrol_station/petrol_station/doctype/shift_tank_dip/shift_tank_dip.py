@@ -14,9 +14,16 @@ class ShiftTankDip(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		book_stock: DF.Float
+		fuel_item: DF.Link
+		opening: DF.Float
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		physical_dip_mm: DF.Float
+		physical_liters: DF.Float
+		tank: DF.Link
+		variation: DF.Float
 	# end: auto-generated types
 
 	pass

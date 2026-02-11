@@ -4,8 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import today, getdate
-from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import create_fuel_ledger, FuelLedgerData, \
-	get_item_valuation_rate
+from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import create_fuel_ledger, FuelLedgerData
 
 
 class TankDipLog(Document):
@@ -50,16 +49,10 @@ class TankDipLog(Document):
 	def on_submit(self):
 		"""Create Fuel Ledger entry, Stock Entry, and Stock Reconciliation on submit."""
 		self.create_fuel_ledger_entry()
-		if self.stock_in and self.stock_in > 0:
-			self.create_stock_entry()
-		if abs(self.opening_dip - self.physical_liters) > 0:
-			self.create_stock_reconciliation()
 
 	def on_cancel(self):
 		"""Cancel related Fuel Ledger entry, Stock Entry, and Stock Reconciliation on cancel."""
 		self.cancel_fuel_ledger_entry()
-		self.cancel_stock_entry()
-		self.cancel_stock_reconciliation()
 
 	def create_fuel_ledger_entry(self):
 		"""
@@ -98,101 +91,6 @@ class TankDipLog(Document):
 			1
 		)
 
-	def cancel_stock_entry(self):
-		"""
-		Cancel the Stock Entry linked to this Tank Dip Log using ref_tank_dip_log reference.
-		"""
-		stock_entries = frappe.get_all(
-			"Stock Entry Detail",
-			filters={"ref_tank_dip_log": self.name},
-			fields=["parent"]
-		)
-
-		for entry in stock_entries:
-			stock_entry = frappe.get_doc("Stock Entry", entry.parent)
-			if stock_entry.docstatus == 1:
-				stock_entry.cancel()
-
-	def cancel_stock_reconciliation(self):
-		"""
-		Cancel the Stock Reconciliation linked to this Tank Dip Log using ref_tank_dip_log reference.
-		"""
-		stock_reconciliation = frappe.db.get_value(
-			"Stock Reconciliation",
-			filters={"ref_tank_dip_log": self.name},
-			fieldname=["name"]
-		)
-
-		if stock_reconciliation:
-			doc = frappe.get_doc("Stock Reconciliation", stock_reconciliation)
-			doc.flags.ignore_permissions = True
-			if doc.docstatus == 1:
-				doc.cancel()
-
-
-
-
-
-	def create_stock_entry(self):
-		"""
-		Create a Stock Entry of type Material Receipt if stock_in > 0.
-
-		Returns:
-			StockEntry: Created Stock Entry document
-		"""
-		stock_entry = frappe.get_doc({
-			"doctype": "Stock Entry",
-			"stock_entry_type": "Material Receipt",
-			"posting_date": self.posting_date,
-			"posting_time": self.posting_time,
-			"items": [{
-				"item_code": self.fuel_item,
-				"qty": self.stock_in,
-				"t_warehouse": self.tank,
-				"conversion_factor": 1,
-				"allow_zero_valuation_rate": 1,
-				"ref_tank_dip_log": self.name
-			}]
-		})
-
-		stock_entry.flags.ignore_permissions = True
-		stock_entry.insert()
-		stock_entry.submit()
-
-		return stock_entry
-
-
-	def create_stock_reconciliation(self):
-		"""
-		Create a Stock Reconciliation when there's a difference between opening_dip and physical_liters.
-
-		Returns:
-			StockReconciliation: Created Stock Reconciliation document
-		"""
-		valuation_rate = get_item_valuation_rate(item_code=self.fuel_item, warehouse=self.tank)
-
-		qty = self.physical_liters + float(self.stock_in)
-		stock_reconciliation = frappe.get_doc({
-			"doctype": "Stock Reconciliation",
-			"purpose": "Stock Reconciliation",
-			"posting_date": self.posting_date,
-			"posting_time": self.posting_time,
-			"ref_tank_dip_log": self.name,
-			"items": [{
-				"item_code": self.fuel_item,
-				"warehouse": self.tank,
-				"qty": qty,
-				"valuation_rate": valuation_rate,
-				"allow_zero_valuation_rate": 1,
-				"ref_tank_dip_log": self.name
-			}]
-		})
-
-		stock_reconciliation.flags.ignore_permissions = True
-		stock_reconciliation.insert(ignore_permissions=True)
-		stock_reconciliation.submit()
-
-		return stock_reconciliation
 
 @frappe.whitelist()
 def get_last_closing_book_balance(tank: str):

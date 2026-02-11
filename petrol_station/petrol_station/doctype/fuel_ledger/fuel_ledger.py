@@ -3,10 +3,12 @@
 
 import frappe
 from erpnext.stock.get_item_details import get_valuation_rate
+from frappe import DoesNotExistError
 from frappe.model.document import Document
 from dataclasses import dataclass
 from typing import Optional
 
+from frappe.utils import flt
 
 
 class FuelLedger(Document):
@@ -42,7 +44,9 @@ class FuelLedger(Document):
 		water_level_mm: DF.Float
 	# end: auto-generated types
 
-	pass
+	def on_update(self):
+		if self.has_value_changed("is_cancelled") and self.is_cancelled == True:
+			cancel_stock_reconciliation(self)
 
 
 @dataclass
@@ -131,6 +135,9 @@ def create_fuel_ledger(data: FuelLedgerData):
 
 	fuel_ledger.insert()
 
+	if flt(fuel_ledger.get("variation_liters")) > 0:
+		create_stock_reconciliation(fuel_ledger)
+
 	return fuel_ledger
 
 
@@ -165,3 +172,92 @@ def get_item_valuation_rate(item_code: str, warehouse: str):
 			order_by="posting_date desc, posting_time desc"
 		)
 		return valuation_rate or 0
+
+
+def create_stock_reconciliation(fuel_ledger: FuelLedger | Document | str):
+	if isinstance(fuel_ledger, str):
+		try:
+			fuel_ledger = frappe.get_doc("Fuel Ledger", fuel_ledger)
+		except DoesNotExistError:
+			return None
+
+	valuation_rate = get_item_valuation_rate(item_code=fuel_ledger.fuel_item, warehouse=fuel_ledger.fuel_tank)
+
+	qty = flt(fuel_ledger.physical_dip_reading_liters) + flt(fuel_ledger.liters_in)
+
+	try:
+		stock_reconciliation = frappe.get_doc({
+			"doctype": "Stock Reconciliation",
+			"purpose": "Stock Reconciliation",
+			"posting_date": fuel_ledger.posting_date,
+			"posting_time": fuel_ledger.posting_time,
+			"ref_fuel_ledger": fuel_ledger.name,
+			"items": [{
+				"item_code": fuel_ledger.fuel_item,
+				"warehouse": fuel_ledger.fuel_tank,
+				"qty": qty,
+				"valuation_rate": valuation_rate,
+				"allow_zero_valuation_rate": 1,
+				"ref_fuel_ledger": fuel_ledger.name
+			}]
+		})
+
+		stock_reconciliation.flags.ignore_permissions = True
+		stock_reconciliation.insert(ignore_permissions=True)
+		stock_reconciliation.submit()
+	except Exception as e:
+		frappe.log_error(title="Fuel Ledger Reconciliation Error", message=str(e))
+		frappe.throw(msg=str(e), title="Fuel Ledger Reconciliation Error")
+	return None
+
+def cancel_stock_reconciliation(fuel_ledger: FuelLedger | Document):
+	stock_reconciliation = frappe.db.get_value(
+		"Stock Reconciliation",
+		filters={"ref_fuel_ledger": fuel_ledger.name},
+		fieldname=["name"]
+	)
+
+	if stock_reconciliation:
+		doc = frappe.get_doc("Stock Reconciliation", stock_reconciliation)
+		doc.flags.ignore_permissions = True
+		if doc.docstatus == 1:
+			doc.cancel()
+
+
+def cancel_fuel_ledgers_by_voucher(voucher_type: str, voucher_name: str):
+	"""
+	Cancel all Fuel Ledger entries linked to a specific voucher.
+	Marks fuel ledgers as cancelled (is_cancelled = 1) and cancels their stock reconciliations.
+
+	Args:
+		voucher_type (str): The type of voucher (e.g., "Shift Opening Entry")
+		voucher_name (str): The name/ID of the voucher
+
+	Returns:
+		int: Number of Fuel Ledgers cancelled
+	"""
+	# Find all Fuel Ledgers linked to this voucher
+	fuel_ledgers = frappe.get_all(
+		"Fuel Ledger",
+		filters={
+			"voucher_type": voucher_type,
+			"voucher_no": voucher_name,
+			"is_cancelled": 0
+		},
+		pluck="name"
+	)
+
+	if not fuel_ledgers:
+		return 0
+
+	# Mark each ledger as cancelled
+	for ledger_name in fuel_ledgers:
+		ledger = frappe.get_doc("Fuel Ledger", ledger_name)
+		ledger.is_cancelled = 1
+		ledger.save(ignore_permissions=True)
+
+		# cancel_stock_reconciliation is automatically called in on_update hook
+
+	frappe.db.commit()
+
+	return len(fuel_ledgers)

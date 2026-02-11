@@ -3,8 +3,10 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import today
-from petrol_station.petrol_station.doctype.tank_dip_log.tank_dip_log import get_tank_dip_logs_by_date
+from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import (
+	create_fuel_ledger,
+	FuelLedgerData, cancel_fuel_ledgers_by_voucher
+)
 from petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading import (
 	create_pump_meter_reading,
 	PumpMeterReadingData
@@ -42,40 +44,17 @@ class ShiftOpeningEntry(Document):
 
 	def onload(self):
 		pass
-		# date = today()
-		# if self.posting_date:
-		# 	date = self.posting_date
-		#
-		# try:
-		# 	tank_reading = get_tank_dip_logs_by_date(date)
-		# 	self.dip_readings = []
-		# 	for tank in tank_reading:
-		# 		self.append("dip_readings", {
-		# 			"tank": tank.get("tank"),
-		# 			"dip_log_id": tank.get("name"),
-		# 			"opening_reading": tank.get("opening_dip"),
-		# 			"physical_reading": tank.get("physical_liters")
-		# 		})
-		#
-		# except Exception as e:
-		# 	frappe.log_error(title="Error in fetching tank dip logs", message=e)
 
 	def on_submit(self):
 		self.status = "Open"
 		self.create_pump_meter_readings_from_opening_readings()
+		self.create_fuel_ledgers_from_tank_dips()
 		self.create_purchase_receipts_from_deliveries()
-
-	def validate(self):
-		self.validate_dip_logs_existence()
 
 	def on_cancel(self):
 		self.cancel_pump_meter_readings()
+		self.cancel_fuel_ledgers()
 		self.cancel_purchase_receipts()
-
-	def validate_dip_logs_existence(self):
-		tank_readings = get_tank_dip_logs_by_date(self.posting_date)
-		if not tank_readings or len(tank_readings) == 0:
-			frappe.throw("No tank dip logs found for the selected date")
 
 	def create_pump_meter_readings_from_opening_readings(self):
 		"""
@@ -236,6 +215,46 @@ class ShiftOpeningEntry(Document):
 				pr.cancel()
 
 		return len(pr_names)
+
+	def create_fuel_ledgers_from_tank_dips(self):
+		"""
+		Create Fuel Ledger entries from tank_dips table using create_fuel_ledger function.
+		Each tank dip creates a Fuel Ledger entry with the opening dip reading.
+
+		Returns:
+			list: List of created Fuel Ledger documents
+		"""
+		if not self.tank_dips:
+			return []
+
+		created_ledgers = []
+
+		for tank_dip in self.tank_dips:
+			# Create FuelLedgerData dataclass instance
+			ledger_data = FuelLedgerData(
+				fuel_item=tank_dip.fuel_item,
+				fuel_tank=tank_dip.tank,
+				opening_book_balance=tank_dip.opening,
+				physical_dip_reading_liters=tank_dip.physical_liters,
+				posting_date=self.posting_date,
+				posting_time=self.posting_time,
+				posting_datetime=self.posting_datetime,
+				liters_in=0,
+				liters_out=0,
+				return_to_tank=0,
+				voucher_type="Shift Opening Entry",
+				voucher_no=self.name,
+				voucher_detail_no=tank_dip.name
+			)
+
+			# Create the Fuel Ledger using the helper function
+			fuel_ledger = create_fuel_ledger(ledger_data)
+			created_ledgers.append(fuel_ledger)
+
+		return created_ledgers
+
+	def cancel_fuel_ledgers(self):
+		cancel_fuel_ledgers_by_voucher(self.doctype, self.name)
 
 
 @frappe.whitelist()

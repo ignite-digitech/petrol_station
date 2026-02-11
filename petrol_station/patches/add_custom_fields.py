@@ -18,6 +18,14 @@ custom_fields = {
             "fieldtype": "Link",
             "options": "Tank Dip Log",
             "read_only": 1,
+        },
+        {
+            "fieldname": "ref_fuel_ledger",
+            "insert_after": "reference_purchase_receipt",
+            "label": "Reference Fuel Ledger",
+            "fieldtype": "Link",
+            "options": "Fuel Ledger",
+            "read_only": 1,
         }
     ],
     "Stock Reconciliation": [
@@ -29,6 +37,24 @@ custom_fields = {
             "options": "Tank Dip Log",
             "read_only": 1,
             "hidden": 1,
+        },
+        {
+            "fieldname": "ref_fuel_ledger",
+            "insert_after": "cost_center",
+            "label": "Reference Fuel Ledger",
+            "fieldtype": "Link",
+            "options": "Fuel Ledger",
+            "read_only": 1,
+        }
+    ],
+    "Stock Reconciliation Item": [
+        {
+            "fieldname": "ref_fuel_ledger",
+            "insert_after": "batch_no",
+            "label": "Reference Fuel Ledger",
+            "fieldtype": "Link",
+            "options": "Fuel Ledger",
+            "read_only": 1,
         }
     ],
     "Purchase Receipt Item": [
