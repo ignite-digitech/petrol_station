@@ -1,6 +1,7 @@
 # Copyright (c) 2026, Ignite Digital and contributors
 # For license information, please see license.txt
-
+import frappe
+from frappe.frappeclient import FrappeException
 # import frappe
 from frappe.model.document import Document
 
@@ -40,4 +41,11 @@ class ShiftClosingEntry(Document):
 	# end: auto-generated types
 
 	def on_submit(self):
-		pass
+		from petrol_station.utils import create_meter_sales, create_meter_readings
+		try:
+			create_meter_sales(self)
+			create_meter_readings(self)
+		except FrappeException as e:
+			frappe.log_error(message=frappe.get_traceback(), title="Shift Closing Entry Submission Error")
+			frappe.throw(msg=str(e))
+

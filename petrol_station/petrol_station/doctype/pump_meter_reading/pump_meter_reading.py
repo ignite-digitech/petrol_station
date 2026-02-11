@@ -7,6 +7,8 @@ from erpnext.stock.get_item_details import get_price_list_rate
 from dataclasses import dataclass
 from typing import Optional
 
+from frappe.utils import flt
+
 
 class PumpMeterReading(Document):
 	# begin: auto-generated types
@@ -59,6 +61,7 @@ class PumpMeterReadingData:
 	voucher_no: Optional[str] = None
 	voucher_detail_no: Optional[str] = None
 	is_opening: int = 0
+	selling_price: float = None
 
 
 def create_pump_meter_reading(data: PumpMeterReadingData):
@@ -71,20 +74,27 @@ def create_pump_meter_reading(data: PumpMeterReadingData):
 	Returns:
 		PumpMeterReading: Created PumpMeterReading document
 	"""
-	# Calculate variation
-	variation = abs(data.opening_expected - data.physical_opening)
 
 	if data.is_opening == 1:
 		variation = 0
 
 	# Get selling price from Item Price
-	selling_price = get_selling_price(data.fuel_item)
+	selling_price = data.selling_price
+
+	if selling_price is None:
+		selling_price = get_selling_price(data.fuel_item)
 
 	# Calculate sales amount
 	sales_amount = data.sales_qty * selling_price
 
 	# Calculate closing quantity
-	closing_qty = data.physical_opening - data.sales_qty
+	# closing_qty = flt(data.opening_expected) - flt(data.physical_opening)
+
+	# Calculate variation
+	variation = 0
+	if flt(data.sales_qty) > 0:
+		variation = abs(data.opening_expected - data.physical_opening - data.sales_qty)
+
 
 	# Create the document
 	pump_meter_reading = frappe.get_doc({
@@ -101,7 +111,7 @@ def create_pump_meter_reading(data: PumpMeterReadingData):
 		"sales_qty": data.sales_qty,
 		"selling_price": selling_price,
 		"sales_amount": sales_amount,
-		"closing_qty": closing_qty,
+		"closing_qty": data.physical_opening,
 		"variation": variation,
 		"voucher_type": data.voucher_type,
 		"voucher_no": data.voucher_no,

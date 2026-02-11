@@ -74,6 +74,33 @@ custom_fields = {
             "insert_after": "customer_type",
             "fieldtype": "Data"
         }
+    ],
+    "Selling Settings": [
+        {
+            "fieldname": "customer_for_walk_in",
+            "insert_after": "territory",
+            "fieldtype": "Link",
+            "options": "Customer",
+            "label": "Customer For Walk In",
+        }
+    ],
+    "Sales Invoice": [
+        {
+            "fieldname": "attendant",
+            "insert_after": "customer",
+            "label": "Attendant",
+            "fieldtype": "Link",
+            "options": "Employee",
+        }
+    ],
+    "Sales Invoice Item": [
+        {
+            "fieldname": "ref_shift",
+            "insert_after": "pos_invoice_item",
+            "label": "Reference Shift",
+            "fieldtype": "Link",
+            "options": "Shift Closing Entry",
+        }
     ]
 }
 
