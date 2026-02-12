@@ -337,7 +337,7 @@ function calculate_dip_variation(cdt, cdn){
 
 	let variation = 0
 	if(row.physical_liters){
-		variation = flt(row.opening) - flt(row.physical_liters)
+		variation = Math.abs(flt(row.physical_liters) - flt(row.book_stock))
 	}
 
 	variation = Math.max(variation, 0);
