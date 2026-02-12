@@ -180,7 +180,10 @@ function calculate_sales_qty(frm, cdt, cdn) {
 
 	// Calculate sales_qty = closing - opening - return_to_tank
 	if (flt(row.closing) > 0 || flt(row.return_to_tank) > 0){
-		sales_qty = Math.abs(flt(row.opening) - flt(row.closing) - flt(row.return_to_tank));
+		sales_qty = Math.abs(flt(row.opening) - flt(row.closing));
+		if(flt(row.return_to_tank) > 0){
+			sales_qty -= flt(row.return_to_tank);
+		}
 	}
 
 	// Ensure non-negative
