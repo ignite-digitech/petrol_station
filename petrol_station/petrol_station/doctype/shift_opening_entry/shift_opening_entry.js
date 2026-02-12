@@ -55,7 +55,7 @@ frappe.ui.form.on("Shift Opening Fuel Price", {
 				freeze_message: __('Fetching selling price for {0}', [row.fuel_item]),
 				callback: function(r) {
 					if (r.message) {
-						console.log(r.message);
+						// console.log(r.message);
 						frappe.model.set_value(cdt, cdn, 'rate', r.message);
 
 						frm.refresh_field("selling_prices");
