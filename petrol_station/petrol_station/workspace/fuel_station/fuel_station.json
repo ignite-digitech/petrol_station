@@ -1,0 +1,105 @@
+{
+ "app": "petrol_station",
+ "charts": [],
+ "content": "[{\"id\":\"s_PRjp1BWT\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Fuel Station</span>\",\"col\":12}},{\"id\":\"ZKfcN5AGRx\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Pump Meter Reading\",\"col\":3}},{\"id\":\"iEsYg3pK9I\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tank Dip Log\",\"col\":3}},{\"id\":\"aTsGMg2z6S\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Shift Opening\",\"col\":3}},{\"id\":\"RGGJSp4K-Y\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Shift Closing\",\"col\":3}},{\"id\":\"kbz6r8IHc8\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"cl9mqVHWBc\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}}]",
+ "creation": "2026-02-06 17:24:30.448830",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "grid",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Fuel Station",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setup",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fuel Pump",
+   "link_count": 0,
+   "link_to": "Fuel Pump",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Warehouse",
+   "link_count": 0,
+   "link_to": "Warehouse",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Pump Nozzle",
+   "link_count": 0,
+   "link_to": "Pump Nozzle",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-02-12 13:06:02.861869",
+ "modified_by": "Administrator",
+ "module": "Petrol Station",
+ "name": "Fuel Station",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 23.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Tank Dip Log",
+   "link_to": "Tank Dip Log",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Pump Meter Reading",
+   "link_to": "Pump Meter Reading",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Shift Opening",
+   "link_to": "Shift Opening Entry",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Shift Closing",
+   "link_to": "Shift Closing Entry",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Fuel Station",
+ "type": "Workspace"
+}
