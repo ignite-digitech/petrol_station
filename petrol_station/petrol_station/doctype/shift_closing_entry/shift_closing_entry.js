@@ -10,13 +10,20 @@ frappe.ui.form.on("Shift Closing Entry", {
 			frm.toggle_display(['meter_readings'], true);
 		}
 
+		if (frm.is_new()) {
+			frm.toggle_display(['dip_readings'], false);
+		}
+		else {
+			frm.toggle_display(['dip_readings'], true);
+		}
+
 		// Disable adding/removing rows in payment_reconciliation table
 		frm.fields_dict.payment_reconciliation.grid.cannot_add_rows = true;
 		frm.fields_dict.payment_reconciliation.grid.cannot_delete_rows = true;
 		frm.refresh_field('payment_reconciliation');
 	},
 	onload(frm){
-		if(frm.doc.shift_opening_entry){
+		if(frm.doc.shift_opening_entry && frm.doc.docstatus === 0){
 			update_payment_reconciliation(frm);
 		}
 	},
@@ -317,10 +324,16 @@ frappe.ui.form.on("Shift Tank Dip", {
                 freeze_message: __('Fetching last closing reading for {0}', [frm.doc.tank]),
                 callback: function (r) {
                     if (r.message) {
-                        frappe.model.set_value(cdt, cdn, 'opening', r.message);
+						let opening = r.message
+                        frappe.model.set_value(cdt, cdn, 'opening',opening);
+
+						let book_stock = get_book_stock(row.tank, opening)
+
+						frappe.model.set_value(cdt, cdn, 'book_stock', book_stock)
                     }
                 }
             })
+
         }
     },
 	physical_liters(frm, cdt, cdn){
@@ -330,22 +343,22 @@ frappe.ui.form.on("Shift Tank Dip", {
 			let book_stock = get_book_stock(row.tank, row.opening)
 			frappe.model.set_value(cdt, cdn, 'book_stock', book_stock)
 
-			let variation = calculate_dip_variation(cdt, cdn)
+			let variation = calculate_dip_variation(cdt, cdn, book_stock)
 			frappe.model.set_value(cdt, cdn, 'variation', variation)
 		}
 	}
 
 })
 
-function calculate_dip_variation(cdt, cdn){
+function calculate_dip_variation(cdt, cdn, book_stock){
 	let row = locals[cdt][cdn]
 
 	let variation = 0
 	if(row.physical_liters){
-		variation = Math.abs(flt(row.physical_liters) - flt(row.book_stock))
+		variation =  flt(book_stock) - flt(row.physical_liters)
 	}
 
-	variation = Math.max(variation, 0);
+	variation = variation * -1;
 
 	return variation
 
@@ -388,9 +401,12 @@ function update_all_dip_book_stocks(frm) {
 
 				// Recalculate variation if physical_liters exists
 				if (dip_row.physical_liters) {
-					let variation = Math.abs(flt(dip_row.physical_liters) - flt(book_stock));
-					variation = Math.max(variation, 0);
+					let variation = flt(book_stock) - flt(dip_row.physical_liters);
+					variation = variation * -1;
 					frappe.model.set_value(dip_row.doctype, dip_row.name, 'variation', variation);
+
+					// Format variation column with color
+					let actual_variation = flt(dip_row.physical_liters) - flt(book_stock)
 				}
 			}
 		});

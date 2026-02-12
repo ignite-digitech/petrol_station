@@ -193,7 +193,7 @@
    "fieldname": "shortage_status",
    "fieldtype": "Select",
    "label": "Shortage Status",
-   "options": "Normal\nHigh Loss\nHigh Gain",
+   "options": "Normal\nHigh Loss\nHigh Gain\nLoss\nGain",
    "read_only": 1
   },
   {
@@ -214,7 +214,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-09 15:35:44.469931",
+ "modified": "2026-02-12 19:15:34.143634",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Fuel Ledger",

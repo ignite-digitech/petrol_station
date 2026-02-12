@@ -97,8 +97,9 @@ frappe.ui.form.on("Shift Tank Dip", {
 
 		if(row.physical_liters){
 			let variation = flt(row.opening) - flt(row.physical_liters)
-			variation = Math.max( variation, 0)
+			variation = flt(variation) * -1
 			frappe.model.set_value(cdt, cdn, 'variation', variation)
+
 		}
 	}
 

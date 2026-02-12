@@ -34,7 +34,7 @@ class FuelLedger(Document):
 		posting_datetime: DF.Datetime | None
 		posting_time: DF.Time | None
 		return_to_tank: DF.Float
-		shortage_status: DF.Literal["Normal", "High Loss", "High Gain"]
+		shortage_status: DF.Literal["Normal", "High Loss", "High Gain", "Loss", "Gain"]
 		variation_liters: DF.Float
 		variation_percentage: DF.Float
 		variation_value: DF.Currency
@@ -93,7 +93,9 @@ def create_fuel_ledger(data: FuelLedgerData):
 	) - data.return_to_tank - data.liters_out
 
 	# Calculate variation_liters
-	variation_liters = data.opening_book_balance - data.physical_dip_reading_liters
+	variation_liters = flt(data.opening_book_balance) - flt(data.physical_dip_reading_liters) - flt(data.liters_out)
+
+	variation_liters = variation_liters * -1
 
 	# Calculate variation_percentage
 	if data.opening_book_balance > 0:
@@ -107,6 +109,14 @@ def create_fuel_ledger(data: FuelLedgerData):
 	# Calculate variation_value
 	variation_value = valuation_rate * variation_liters
 
+	# Set shortage_status based on variation_liters
+	if variation_liters < 0:
+		shortage_status = "Loss"
+	elif variation_liters > 0:
+		shortage_status = "Gain"
+	else:
+		shortage_status = data.shortage_status
+
 	# Create the document
 	fuel_ledger = frappe.get_doc({
 		"doctype": "Fuel Ledger",
@@ -119,7 +129,7 @@ def create_fuel_ledger(data: FuelLedgerData):
 		"liters_in": data.liters_in,
 		"liters_out": data.liters_out,
 		"return_to_tank": data.return_to_tank,
-		"closing_book_balance": closing_book_balance,
+		"closing_book_balance": data.physical_dip_reading_liters,
 		"physical_dip_reading_mm": data.physical_dip_reading_mm,
 		"conversion_factor": data.conversion_factor,
 		"physical_dip_reading_liters": data.physical_dip_reading_liters,
@@ -127,7 +137,7 @@ def create_fuel_ledger(data: FuelLedgerData):
 		"variation_liters": variation_liters,
 		"variation_percentage": variation_percentage,
 		"variation_value": variation_value,
-		"shortage_status": data.shortage_status,
+		"shortage_status": shortage_status,
 		"voucher_type": data.voucher_type,
 		"voucher_no": data.voucher_no,
 		"voucher_detail_no": data.voucher_detail_no
@@ -135,7 +145,7 @@ def create_fuel_ledger(data: FuelLedgerData):
 
 	fuel_ledger.insert()
 
-	if flt(fuel_ledger.get("variation_liters")) > 0:
+	if abs(flt(fuel_ledger.get("variation_liters"))) > 0:
 		create_stock_reconciliation(fuel_ledger)
 
 	return fuel_ledger
@@ -183,7 +193,7 @@ def create_stock_reconciliation(fuel_ledger: FuelLedger | Document | str):
 
 	valuation_rate = get_item_valuation_rate(item_code=fuel_ledger.fuel_item, warehouse=fuel_ledger.fuel_tank)
 
-	qty = flt(fuel_ledger.physical_dip_reading_liters) + flt(fuel_ledger.liters_in)
+	qty = flt(fuel_ledger.physical_dip_reading_liters)
 
 	try:
 		stock_reconciliation = frappe.get_doc({

@@ -1,6 +1,6 @@
 import frappe
 from frappe.model.document import Document
-from frappe.utils import flt
+from frappe.utils import flt, today, nowtime, now, get_datetime
 from petrol_station.petrol_station.doctype.shift_closing_entry.shift_closing_entry import ShiftClosingEntry
 from petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading import (
     create_pump_meter_reading,
@@ -61,8 +61,8 @@ def prepare_invoices_from_readings(doc: Document | ShiftClosingEntry | str):
     for attendant, readings in attendant_readings.items():
         invoice_data = {
             "customer": walk_in_customer,
-            "posting_date": doc.posting_date,
-            "posting_time": doc.posting_time,
+            "posting_date": today(),
+            "posting_time": nowtime(),
             "company": doc.company,
             "attendant": attendant if attendant != "No Attendant" else None,
             "items": []
@@ -195,8 +195,8 @@ def create_pump_meter_readings_from_closing(doc: Document | ShiftClosingEntry | 
             opening_expected=reading.opening or 0,
             physical_opening=reading.closing,
             sales_qty=reading.sales_qty,
-            posting_date=doc.posting_date,
-            posting_time=doc.posting_time,
+            posting_date=today(),
+            posting_time=nowtime(),
             employee=reading.attendant,
             tank=reading.tank,
             voucher_type="Shift Closing Entry",
@@ -257,8 +257,8 @@ def create_sales_invoices_from_credit_sales(doc: Document | ShiftClosingEntry | 
         invoice_data = {
             "doctype": "Sales Invoice",
             "customer": customer,
-            "posting_date": doc.posting_date,
-            "posting_time": doc.posting_time,
+            "posting_date": today(),
+            "posting_time": nowtime(),
             "set_posting_time": 1,
             "company": doc.company,
             "items": [],
@@ -321,11 +321,11 @@ def create_fuel_ledgers_from_dip_readings(doc: Document | ShiftClosingEntry | st
             fuel_tank=dip_reading.tank,
             opening_book_balance=dip_reading.opening or 0,
             physical_dip_reading_liters=dip_reading.physical_liters,
-            posting_date=doc.posting_date,
-            posting_time=doc.posting_time,
-            posting_datetime=doc.period_start_date,
+            posting_date=today(),
+            posting_time=nowtime(),
+            posting_datetime=get_datetime(),
             liters_in=0,
-            liters_out=0,
+            liters_out=doc.total_qty,
             return_to_tank=0,
             physical_dip_reading_mm=dip_reading.physical_dip_mm,
             conversion_factor=None,
