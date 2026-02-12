@@ -104,7 +104,8 @@ def get_last_closing_book_balance(tank: str):
 		"Fuel Ledger",
 		{
 			"fuel_tank": tank,
-			"is_cancelled": 0
+			"is_cancelled": 0,
+			"closing_book_balance": [">", 0]
 		},
 		"closing_book_balance",
 		order_by="posting_date desc, posting_time desc"

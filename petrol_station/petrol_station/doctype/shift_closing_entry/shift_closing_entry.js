@@ -98,6 +98,7 @@ frappe.ui.form.on("Closing Meter Reading", {
 	return_to_tank(frm, cdt, cdn) {
 		calculate_sales_qty(frm, cdt, cdn);
 		calculate_totals(frm);
+		update_all_dip_book_stocks(frm);
 	},
 
 	unit_price(frm, cdt, cdn) {
@@ -106,6 +107,7 @@ frappe.ui.form.on("Closing Meter Reading", {
 
 	sales_qty(frm, cdt, cdn) {
 		calculate_total_amount(frm, cdt, cdn);
+		update_all_dip_book_stocks(frm);
 	},
 
 	total_amount(frm, cdt, cdn) {
@@ -372,6 +374,24 @@ function get_sales_qty_sum_for_tank(tank) {
 		sales_qty: total_sales_qty,
 		returns: total_returns
 	};
+}
+
+function update_all_dip_book_stocks(frm) {
+	if (frm.doc.dip_readings) {
+		frm.doc.dip_readings.forEach(function(dip_row) {
+			if (dip_row.tank && dip_row.opening !== undefined) {
+				let book_stock = get_book_stock(dip_row.tank, dip_row.opening);
+				frappe.model.set_value(dip_row.doctype, dip_row.name, 'book_stock', book_stock);
+
+				// Recalculate variation if physical_liters exists
+				if (dip_row.physical_liters) {
+					let variation = Math.abs(flt(dip_row.physical_liters) - flt(book_stock));
+					variation = Math.max(variation, 0);
+					frappe.model.set_value(dip_row.doctype, dip_row.name, 'variation', variation);
+				}
+			}
+		});
+	}
 }
 
 
