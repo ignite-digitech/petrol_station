@@ -485,14 +485,6 @@ def make_shift_closing_entry(source_name, target_doc=None):
 					"company": "company",
 					"supervisor": "supervisor",
 				},
-			},
-			"Shift Opening Meter Reading": {
-				"doctype": "Closing Meter Reading",
-				"field_map": {
-					"nozzle": "nozzle",
-					"tank": "tank",
-					"opening_reading": "opening_reading",
-				},
 			}
 		},
 		target_doc,
