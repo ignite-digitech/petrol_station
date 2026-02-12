@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import flt, today, nowtime
 from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import (
 	create_fuel_ledger,
 	FuelLedgerData, cancel_fuel_ledgers_by_voucher
@@ -163,8 +164,8 @@ class ShiftOpeningEntry(Document):
 			# Create Purchase Receipt for each supplier
 			pr = frappe.new_doc("Purchase Receipt")
 			pr.supplier = supplier
-			pr.posting_date = self.posting_date
-			pr.posting_time = self.posting_time
+			pr.posting_date = today()
+			pr.posting_time = nowtime()
 			pr.set_posting_time = 1
 
 			# Add items from deliveries
@@ -231,6 +232,9 @@ class ShiftOpeningEntry(Document):
 
 		for tank_dip in self.tank_dips:
 			# Create FuelLedgerData dataclass instance
+			if flt(tank_dip.physical_liters) == 0 and flt(tank_dip.opening) == 0:
+				continue
+
 			ledger_data = FuelLedgerData(
 				fuel_item=tank_dip.fuel_item,
 				fuel_tank=tank_dip.tank,

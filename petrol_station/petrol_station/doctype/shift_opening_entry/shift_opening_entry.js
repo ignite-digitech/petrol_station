@@ -83,6 +83,11 @@ frappe.ui.form.on("Shift Tank Dip", {
                         frappe.model.set_value(cdt, cdn, 'opening', r.message);
                         frappe.model.set_value(cdt, cdn, 'book_stock', r.message);
                     }
+					else
+					{
+						frappe.model.set_value(cdt, cdn, 'opening', 0);
+                        frappe.model.set_value(cdt, cdn, 'book_stock', 0);
+					}
                 }
             })
         }
@@ -92,6 +97,7 @@ frappe.ui.form.on("Shift Tank Dip", {
 
 		if(row.physical_liters){
 			let variation = flt(row.opening) - flt(row.physical_liters)
+			variation = Math.max( variation, 0)
 			frappe.model.set_value(cdt, cdn, 'variation', variation)
 		}
 	}

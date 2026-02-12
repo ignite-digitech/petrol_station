@@ -39,7 +39,7 @@ class TankDipLog(Document):
 	def set_opening_dip(self):
 		"""Set opening_dip from last closing_book_balance."""
 		if not self.opening_dip:
-			self.opening_dip = self.get_last_closing_book_balance()
+			self.opening_dip = get_last_closing_book_balance(self.tank)
 
 	def validate_posting_date(self):
 		"""Validate that posting date is not in the future."""

@@ -22,6 +22,7 @@ class ShiftTankDip(Document):
 		parenttype: DF.Data
 		physical_dip_mm: DF.Float
 		physical_liters: DF.Float
+		stock_in: DF.Float
 		tank: DF.Link
 		variation: DF.Float
 	# end: auto-generated types

@@ -12,7 +12,8 @@
   "physical_dip_mm",
   "physical_liters",
   "book_stock",
-  "variation"
+  "variation",
+  "stock_in"
  ],
  "fields": [
   {
@@ -76,13 +77,20 @@
    "link_filters": "[[\"Item\",\"item_group\",\"=\",\"Fuel\"]]",
    "options": "Item",
    "reqd": 1
+  },
+  {
+   "fieldname": "stock_in",
+   "fieldtype": "Float",
+   "label": "Stock In",
+   "non_negative": 1,
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-11 10:07:36.283850",
+ "modified": "2026-02-12 17:37:04.165002",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Shift Tank Dip",
