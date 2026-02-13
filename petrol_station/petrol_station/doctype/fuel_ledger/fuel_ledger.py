@@ -276,3 +276,44 @@ def cancel_fuel_ledgers_by_voucher(voucher_type: str, voucher_name: str):
 	frappe.db.commit()
 
 	return len(fuel_ledgers)
+
+
+@frappe.whitelist()
+def get_all_tanks_with_closing_balance():
+	"""
+	Get the latest closing_book_balance for all fuel tanks.
+
+	Returns:
+		list: List of dictionaries with tank and closing_balance
+			[
+				{
+					"tank": "Tank-001",
+					"closing_balance": 5000.50
+				},
+				...
+			]
+	"""
+	# Query to get the latest closing_book_balance per tank
+	query = """
+		SELECT
+			fl.fuel_tank as tank,
+			fl.closing_book_balance as closing_balance
+		FROM `tabFuel Ledger` fl
+		INNER JOIN (
+			SELECT
+				fuel_tank,
+				MAX(posting_date) as max_date,
+				MAX(posting_time) as max_time
+			FROM `tabFuel Ledger`
+			WHERE is_cancelled = 0
+			GROUP BY fuel_tank
+		) latest ON fl.fuel_tank = latest.fuel_tank
+			AND fl.posting_date = latest.max_date
+			AND fl.posting_time = latest.max_time
+		WHERE fl.is_cancelled = 0
+		ORDER BY fl.fuel_tank
+	"""
+
+	results = frappe.db.sql(query, as_dict=True)
+
+	return results

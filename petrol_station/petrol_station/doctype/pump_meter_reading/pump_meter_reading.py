@@ -248,4 +248,102 @@ def auto_fetch_nozzle_opening_reading(nozzle, posting_date=None, posting_time=No
 		"expected_reading": closing_qty
 	}
 
+@frappe.whitelist()
+def get_all_nozzles_with_opening_reading():
+	"""
+	Get the last reading for each nozzle.
+
+	Returns:
+		list: List of dictionaries with nozzle, pump, tank, and last_reading
+			[
+				{
+					"nozzle": "Nozzle-001",
+					"pump": "Pump-001",
+					"tank": "Tank-001",
+					"last_reading": 1234.56
+				},
+				...
+			]
+	"""
+	# Query to get the last reading per nozzle
+	query = """
+		SELECT
+			pmr.nozzle,
+			pmr.pump,
+			pmr.tank,
+			pmr.closing_qty as last_reading
+		FROM `tabPump Meter Reading` pmr
+		INNER JOIN (
+			SELECT
+				nozzle,
+				MAX(posting_date) as max_date,
+				MAX(posting_time) as max_time
+			FROM `tabPump Meter Reading`
+			WHERE is_cancelled = 0
+			GROUP BY nozzle
+		) latest ON pmr.nozzle = latest.nozzle
+			AND pmr.posting_date = latest.max_date
+			AND pmr.posting_time = latest.max_time
+		WHERE pmr.is_cancelled = 0
+		ORDER BY pmr.nozzle
+	"""
+
+	results = frappe.db.sql(query, as_dict=True)
+
+	return results
+
+
+@frappe.whitelist()
+def get_all_fuel_items_with_prices():
+	"""
+	Get all enabled fuel items with their latest selling prices.
+
+	Returns:
+		list: List of dictionaries with item and price
+			[
+				{
+					"item": "Petrol",
+					"price": 5000.00
+				},
+				{
+					"item": "Diesel",
+					"price": 4500.00
+				},
+				...
+			]
+			Returns 0 for price if no Item Price exists for the item.
+	"""
+	# Get all enabled fuel items
+	fuel_items = frappe.get_all(
+		"Item",
+		filters={
+			"item_group": "Fuel",
+			"disabled": 0
+		},
+		pluck="name"
+	)
+
+	if not fuel_items:
+		return []
+
+	results = []
+
+	for item_code in fuel_items:
+		# Get the latest Item Price for this fuel item
+		latest_price = frappe.db.get_value(
+			"Item Price",
+			filters={
+				"item_code": item_code,
+				"selling": 1
+			},
+			fieldname="price_list_rate",
+			order_by="valid_from desc, creation desc"
+		)
+
+		results.append({
+			"item": item_code,
+			"price": flt(latest_price) if latest_price else 0
+		})
+
+	return results
 
