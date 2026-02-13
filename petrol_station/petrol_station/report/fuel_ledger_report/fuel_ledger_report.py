@@ -100,16 +100,16 @@ def get_columns() -> list[dict]:
 			"width": 130,
 		},
 		{
-			"label": _("Closing Balance"),
-			"fieldname": "closing_book_balance",
-			"fieldtype": "Float",
-			"width": 130,
-		},
-		{
 			"label": _("Physical Reading (L)"),
 			"fieldname": "physical_dip_reading_liters",
 			"fieldtype": "Float",
 			"width": 150,
+		},
+		{
+			"label": _("Closing Balance"),
+			"fieldname": "closing_book_balance",
+			"fieldtype": "Float",
+			"width": 130,
 		},
 		{
 			"label": _("Physical Reading (mm)"),

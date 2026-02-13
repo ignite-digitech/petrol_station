@@ -20,6 +20,11 @@
   "column_break_isht",
   "opening_dip",
   "water_level_mm",
+  "section_break_lbww",
+  "deliveries",
+  "section_break_zpyv",
+  "column_break_ggpy",
+  "column_break_vnhg",
   "stock_in",
   "section_break_n0sz",
   "amended_from"
@@ -79,17 +84,20 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
    "reqd": 1
   },
   {
+   "default": "Now",
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting Time"
   },
   {
+   "default": "Now",
    "fieldname": "posting_datetime",
    "fieldtype": "Datetime",
    "label": "Posting Datetime"
@@ -128,14 +136,37 @@
    "default": "0",
    "fieldname": "stock_in",
    "fieldtype": "Float",
-   "label": "Stock In"
+   "label": "Stock In",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_lbww",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "deliveries",
+   "fieldtype": "Table",
+   "label": "Deliveries",
+   "options": "Fuel Delivery"
+  },
+  {
+   "fieldname": "section_break_zpyv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ggpy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vnhg",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-09 16:10:00.301895",
+ "modified": "2026-02-13 15:58:47.119746",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Tank Dip Log",

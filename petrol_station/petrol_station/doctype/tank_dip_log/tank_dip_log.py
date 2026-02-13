@@ -3,8 +3,9 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import today, getdate
-from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import create_fuel_ledger, FuelLedgerData
+from frappe.utils import today, getdate, nowtime, get_datetime
+from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import create_fuel_ledger, FuelLedgerData, \
+	cancel_fuel_ledgers_by_voucher
 
 
 class TankDipLog(Document):
@@ -15,9 +16,11 @@ class TankDipLog(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+		from petrol_station.petrol_station.doctype.fuel_delivery.fuel_delivery import FuelDelivery
 
 		amended_from: DF.Link | None
 		conversion_factor: DF.Float
+		deliveries: DF.Table[FuelDelivery]
 		employee: DF.Link | None
 		fuel_item: DF.Link
 		opening_dip: DF.Float
@@ -35,6 +38,7 @@ class TankDipLog(Document):
 		"""Validate the document before saving."""
 		self.set_opening_dip()
 		self.validate_posting_date()
+		self.calculate_stock_in()
 
 	def set_opening_dip(self):
 		"""Set opening_dip from last closing_book_balance."""
@@ -46,13 +50,26 @@ class TankDipLog(Document):
 		if self.posting_date and getdate(self.posting_date) > getdate(today()):
 			frappe.throw("Posting Date cannot be a future date")
 
+	def calculate_stock_in(self):
+		"""Calculate total stock_in from deliveries table."""
+		total_stock_in = 0
+		if self.deliveries:
+			for delivery in self.deliveries:
+				if delivery.qty:
+					total_stock_in += delivery.qty
+		self.stock_in = total_stock_in
+
 	def on_submit(self):
+		from petrol_station.utils.deliveries import create_purchase_receipts_from_deliveries
 		"""Create Fuel Ledger entry, Stock Entry, and Stock Reconciliation on submit."""
 		self.create_fuel_ledger_entry()
+		create_purchase_receipts_from_deliveries(doc=self, ignore_create_fuel_ledger=True)
 
 	def on_cancel(self):
+		from petrol_station.utils.deliveries import cancel_purchase_receipts
 		"""Cancel related Fuel Ledger entry, Stock Entry, and Stock Reconciliation on cancel."""
-		self.cancel_fuel_ledger_entry()
+		cancel_fuel_ledgers_by_voucher(voucher_type=self.doctype, voucher_name=self.name)
+		cancel_purchase_receipts(doc=self)
 
 	def create_fuel_ledger_entry(self):
 		"""
@@ -66,30 +83,19 @@ class TankDipLog(Document):
 			fuel_tank=self.tank,
 			opening_book_balance=self.opening_dip,
 			physical_dip_reading_liters=self.physical_liters,
-			posting_date=self.posting_date,
-			posting_time=self.posting_time,
+			posting_date=today(),
+			posting_time=nowtime(),
 			liters_in=self.stock_in,
 			physical_dip_reading_mm=self.physical_dip_reading_mm,
 			conversion_factor=self.conversion_factor,
 			water_level_mm=self.water_level_mm,
-			posting_datetime=self.posting_datetime,
+			posting_datetime=get_datetime(),
 			shortage_status="Normal",
 			voucher_type="Tank Dip Log",
 			voucher_no=self.name
 		)
 
 		return create_fuel_ledger(data)
-
-	def cancel_fuel_ledger_entry(self):
-		"""
-		Cancel the Fuel Ledger entry linked to this Tank Dip Log by setting is_cancelled = 1.
-		"""
-		frappe.db.set_value(
-			"Fuel Ledger",
-			{"voucher_type": "Tank Dip Log", "voucher_no": self.name},
-			"is_cancelled",
-			1
-		)
 
 
 @frappe.whitelist()

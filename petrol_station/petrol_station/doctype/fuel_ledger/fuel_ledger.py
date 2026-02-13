@@ -45,7 +45,7 @@ class FuelLedger(Document):
 	# end: auto-generated types
 
 	def on_update(self):
-		if self.has_value_changed("is_cancelled") and self.is_cancelled == True:
+		if self.has_value_changed("is_cancelled") and self.is_cancelled == 1:
 			cancel_stock_reconciliation(self)
 
 
@@ -54,15 +54,15 @@ class FuelLedgerData:
 	"""Data class for creating Fuel Ledger."""
 	fuel_item: str
 	fuel_tank: str
-	opening_book_balance: float
-	physical_dip_reading_liters: float
 	posting_date: str
 	posting_time: str
+	opening_book_balance: float
+	physical_dip_reading_liters: float = 0
 	liters_in: float = 0
 	liters_out: float = 0
-	return_to_tank: float = 0
+	return_to_tank: Optional[float] = 0
 	physical_dip_reading_mm: Optional[float] = None
-	conversion_factor: Optional[float] = None
+	conversion_factor: Optional[float] = 1
 	water_level_mm: Optional[float] = None
 	posting_datetime: Optional[str] = None
 	voucher_type: Optional[str] = None
@@ -89,33 +89,38 @@ def create_fuel_ledger(data: FuelLedgerData):
 	"""
 	# Calculate closing_book_balance
 	closing_book_balance = (
-		data.physical_dip_reading_liters + data.liters_in
-	) - data.return_to_tank - data.liters_out
+		flt(data.opening_book_balance) + flt(data.liters_in)
+	) - flt(data.liters_out) - flt(data.return_to_tank)
 
-	# Calculate variation_liters
-	variation_liters = flt(data.opening_book_balance) - flt(data.physical_dip_reading_liters) - flt(data.liters_out)
+	variation_liters, variation_percentage, variation_value = 0, 0, 0
+	shortage_status = "Normal"
+	if data.physical_dip_reading_liters:
+		closing_book_balance = (data.physical_dip_reading_liters + flt(data.liters_in)) - flt(data.liters_out)
 
-	variation_liters = variation_liters * -1
+		# Calculate variation_liters
+		variation_liters = flt(data.opening_book_balance) - flt(data.physical_dip_reading_liters) - flt(data.liters_out)
 
-	# Calculate variation_percentage
-	if data.opening_book_balance > 0:
-		variation_percentage = (variation_liters / data.opening_book_balance) * 100
-	else:
-		variation_percentage = 0
+		variation_liters = variation_liters * -1
 
-	# Get valuation rate for the fuel item
-	valuation_rate = get_item_valuation_rate(data.fuel_item, data.fuel_tank)
+		# Calculate variation_percentage
+		if data.opening_book_balance > 0:
+			variation_percentage = (variation_liters / data.opening_book_balance) * 100
+		else:
+			variation_percentage = 0
 
-	# Calculate variation_value
-	variation_value = valuation_rate * variation_liters
+		# Get valuation rate for the fuel item
+		valuation_rate = get_item_valuation_rate(data.fuel_item, data.fuel_tank)
 
-	# Set shortage_status based on variation_liters
-	if variation_liters < 0:
-		shortage_status = "Loss"
-	elif variation_liters > 0:
-		shortage_status = "Gain"
-	else:
-		shortage_status = data.shortage_status
+		# Calculate variation_value
+		variation_value = valuation_rate * variation_liters
+
+		# Set shortage_status based on variation_liters
+		if variation_liters < 0:
+			shortage_status = "Loss"
+		elif variation_liters > 0:
+			shortage_status = "Gain"
+		else:
+			shortage_status = data.shortage_status
 
 	# Create the document
 	fuel_ledger = frappe.get_doc({
@@ -129,7 +134,7 @@ def create_fuel_ledger(data: FuelLedgerData):
 		"liters_in": data.liters_in,
 		"liters_out": data.liters_out,
 		"return_to_tank": data.return_to_tank,
-		"closing_book_balance": data.physical_dip_reading_liters,
+		"closing_book_balance": closing_book_balance,
 		"physical_dip_reading_mm": data.physical_dip_reading_mm,
 		"conversion_factor": data.conversion_factor,
 		"physical_dip_reading_liters": data.physical_dip_reading_liters,

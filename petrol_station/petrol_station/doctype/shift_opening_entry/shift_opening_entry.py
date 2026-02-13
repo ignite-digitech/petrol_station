@@ -47,15 +47,17 @@ class ShiftOpeningEntry(Document):
 		pass
 
 	def on_submit(self):
+		from petrol_station.utils.deliveries import create_purchase_receipts_from_deliveries
 		self.status = "Open"
 		self.create_pump_meter_readings_from_opening_readings()
 		self.create_fuel_ledgers_from_tank_dips()
-		self.create_purchase_receipts_from_deliveries()
+		create_purchase_receipts_from_deliveries(self)
 
 	def on_cancel(self):
+		from petrol_station.utils.deliveries import cancel_purchase_receipts
 		self.cancel_pump_meter_readings()
 		self.cancel_fuel_ledgers()
-		self.cancel_purchase_receipts()
+		cancel_purchase_receipts(self)
 
 	def create_pump_meter_readings_from_opening_readings(self):
 		"""
@@ -138,84 +140,6 @@ class ShiftOpeningEntry(Document):
 		frappe.db.commit()
 
 		return len(pump_meter_readings)
-
-	def create_purchase_receipts_from_deliveries(self):
-		"""
-		Create Purchase Receipt documents from deliveries table.
-		Each delivery row creates a Purchase Receipt Item with the tank as warehouse
-		and opening_shift reference.
-
-		Returns:
-			list: List of created Purchase Receipt documents
-		"""
-		if not self.deliveries:
-			return []
-
-		# Group deliveries by supplier
-		supplier_deliveries = {}
-		for delivery in self.deliveries:
-			if delivery.supplier not in supplier_deliveries:
-				supplier_deliveries[delivery.supplier] = []
-			supplier_deliveries[delivery.supplier].append(delivery)
-
-		created_receipts = []
-
-		for supplier, deliveries in supplier_deliveries.items():
-			# Create Purchase Receipt for each supplier
-			pr = frappe.new_doc("Purchase Receipt")
-			pr.supplier = supplier
-			pr.posting_date = today()
-			pr.posting_time = nowtime()
-			pr.set_posting_time = 1
-
-			# Add items from deliveries
-			for delivery in deliveries:
-				pr.append("items", {
-					"item_code": delivery.fuel_item,
-					"qty": delivery.qty,
-					"rate": delivery.rate,
-					"warehouse": delivery.tank,
-					"opening_shift": self.name
-				})
-
-			pr.insert()
-			pr.submit()
-			created_receipts.append(pr)
-
-		return created_receipts
-
-	def cancel_purchase_receipts(self):
-		"""
-		Cancel all Purchase Receipts linked to this Shift Opening Entry.
-		Finds and cancels all Purchase Receipts with items referencing this opening shift.
-
-		Returns:
-			int: Number of Purchase Receipts cancelled
-		"""
-		# Find all Purchase Receipt Items linked to this Shift Opening Entry
-		pr_items = frappe.get_all(
-			"Purchase Receipt Item",
-			filters={
-				"opening_shift": self.name,
-				"docstatus": 1
-			},
-			fields=["parent"],
-			distinct=True
-		)
-
-		if not pr_items:
-			return 0
-
-		# Get unique Purchase Receipt names
-		pr_names = list(set([item.parent for item in pr_items]))
-
-		# Cancel each Purchase Receipt
-		for pr_name in pr_names:
-			pr = frappe.get_doc("Purchase Receipt", pr_name)
-			if pr.docstatus == 1:
-				pr.cancel()
-
-		return len(pr_names)
 
 	def create_fuel_ledgers_from_tank_dips(self):
 		"""

@@ -22,6 +22,9 @@ def on_submit(doc, method=None):
 		doc: Purchase Receipt document
 		method: Hook method (unused)
 	"""
+	if doc.flags.ignore_create_fuel_ledger:
+		return
+
 	create_fuel_ledger_entries_from_purchase_receipt(doc)
 
 

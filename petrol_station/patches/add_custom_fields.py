@@ -65,6 +65,14 @@ custom_fields = {
             "fieldtype": "Link",
             "options": "Shift Opening Entry",
             "read_only": 1,
+        },
+        {
+            "fieldname": "ref_tank_dip_log",
+            "insert_after": "project",
+            "label": "Tank Dip Log",
+            "fieldtype": "Link",
+            "options": "Tank Dip Log",
+            "read_only": 1,
         }
     ],
     "Customer": [

@@ -26,3 +26,34 @@ frappe.ui.form.on("Tank Dip Log", {
     }
 });
 
+frappe.ui.form.on("Fuel Delivery", {
+    deliveries_add: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if (frm.doc.tank && frm.doc.fuel_item) {
+            frappe.model.set_value(cdt, cdn, "tank", frm.doc.tank);
+            frappe.model.set_value(cdt, cdn, "fuel_item", frm.doc.fuel_item);
+        }
+    },
+    qty: function(frm, cdt, cdn) {
+        calculate_stock_in()
+    },
+    rate: function(frm, cdt, cdn) {
+        calculate_stock_in()
+    },
+    deliveries_remove: function(frm) {
+        calculate_stock_in()
+    }
+});
+
+function calculate_stock_in() {
+    let total_stock_in = 0;
+    if (cur_frm.doc.deliveries) {
+        cur_frm.doc.deliveries.forEach(function(delivery) {
+            if (delivery.qty) {
+                total_stock_in += delivery.qty;
+            }
+        });
+    }
+    cur_frm.set_value("stock_in", total_stock_in);
+}
+

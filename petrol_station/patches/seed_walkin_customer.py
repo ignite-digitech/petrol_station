@@ -19,7 +19,6 @@ def execute():
 
 	# Set customer_for_walk_in in Selling Settings if field exists
 	selling_settings = frappe.get_single("Selling Settings")
-	if not selling_settings.customer_for_walk_in:
-		selling_settings.customer_for_walk_in = "Walk-In"
-		selling_settings.save(ignore_permissions=True)
-		frappe.db.commit()
+	selling_settings.customer_for_walk_in = "Walk-In"
+	selling_settings.save(ignore_permissions=True)
+	frappe.db.commit()
