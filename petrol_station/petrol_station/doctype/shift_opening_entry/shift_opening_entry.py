@@ -43,15 +43,13 @@ class ShiftOpeningEntry(Document):
 		tank_dips: DF.Table[ShiftTankDip]
 	# end: auto-generated types
 
-	def onload(self):
-		pass
-
 	def on_submit(self):
 		from petrol_station.utils.deliveries import create_purchase_receipts_from_deliveries
-		self.status = "Open"
+		frappe.db.set_value(self.doctype, self.name, "status", "Open")
 		self.create_pump_meter_readings_from_opening_readings()
 		self.create_fuel_ledgers_from_tank_dips()
-		create_purchase_receipts_from_deliveries(self)
+		create_purchase_receipts_from_deliveries(doc=self, ignore_create_fuel_ledger=True)
+		self.create_item_prices_if_changed()
 
 	def on_cancel(self):
 		from petrol_station.utils.deliveries import cancel_purchase_receipts
@@ -152,12 +150,22 @@ class ShiftOpeningEntry(Document):
 		if not self.tank_dips:
 			return []
 
+		def get_tank_stock_in(tank, fuel_item):
+			if not self.deliveries:
+				return 0
+
+			return sum(delivery.qty
+			           for delivery in self.deliveries
+			           if delivery.tank == tank and delivery.fuel_item == fuel_item) or 0
+
 		created_ledgers = []
 
 		for tank_dip in self.tank_dips:
 			# Create FuelLedgerData dataclass instance
 			if flt(tank_dip.physical_liters) == 0 and flt(tank_dip.opening) == 0:
 				continue
+
+			stock_in = get_tank_stock_in(tank_dip.tank, tank_dip.fuel_item)
 
 			ledger_data = FuelLedgerData(
 				fuel_item=tank_dip.fuel_item,
@@ -167,7 +175,7 @@ class ShiftOpeningEntry(Document):
 				posting_date=self.posting_date,
 				posting_time=self.posting_time,
 				posting_datetime=self.posting_datetime,
-				liters_in=0,
+				liters_in=stock_in,
 				liters_out=0,
 				return_to_tank=0,
 				voucher_type="Shift Opening Entry",
@@ -183,6 +191,64 @@ class ShiftOpeningEntry(Document):
 
 	def cancel_fuel_ledgers(self):
 		cancel_fuel_ledgers_by_voucher(self.doctype, self.name)
+
+	def create_item_prices_if_changed(self):
+		"""
+		Create Item Price records from selling_prices table if the price has changed
+		from the previous Item Price for the same item.
+
+		Returns:
+			list: List of created Item Price documents
+		"""
+		if not self.selling_prices:
+			return []
+
+		created_prices = []
+
+		for price_row in self.selling_prices:
+			fuel_item = price_row.fuel_item
+			new_rate = flt(price_row.rate)
+
+			if not fuel_item or new_rate == 0:
+				continue
+
+			# Get the latest Item Price for this fuel item
+			latest_price = frappe.db.get_value(
+				"Item Price",
+				filters={
+					"item_code": fuel_item,
+					"selling": 1
+				},
+				fieldname=["name", "price_list_rate"],
+				as_dict=True,
+				order_by="valid_from desc, creation desc"
+			)
+
+			# Only create if price has changed or no previous price exists
+			if not latest_price or flt(latest_price.price_list_rate) != new_rate:
+				# Get default price list from settings or use Standard Selling
+				price_list = frappe.db.get_single_value("Selling Settings", "selling_price_list") or "Standard Selling"
+
+				# Create new Item Price
+				item_price = frappe.get_doc({
+					"doctype": "Item Price",
+					"item_code": fuel_item,
+					"price_list": price_list,
+					"price_list_rate": new_rate,
+					"selling": 1,
+					"valid_from": self.posting_date,
+					"reference": f"{self.doctype}: {self.name}"
+				})
+
+				item_price.insert(ignore_permissions=True)
+				created_prices.append(item_price)
+
+				frappe.msgprint(
+					f"Created Item Price for {fuel_item} at rate {new_rate}",
+					alert=True
+				)
+
+		return created_prices
 
 
 @frappe.whitelist()
