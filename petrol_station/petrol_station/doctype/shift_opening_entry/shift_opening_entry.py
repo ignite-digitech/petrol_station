@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import flt, today, nowtime
+from petrol_station.petrol_station.doctype.closing_meter_reading.closing_meter_reading import ClosingMeterReading
 from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import (
 	create_fuel_ledger,
 	FuelLedgerData, cancel_fuel_ledgers_by_voucher
@@ -12,6 +13,9 @@ from petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading
 	create_pump_meter_reading,
 	PumpMeterReadingData
 )
+from petrol_station.petrol_station.doctype.shift_opening_meter_reading.shift_opening_meter_reading import \
+	ShiftOpeningMeterReading
+from petrol_station.petrol_station.doctype.shift_tank_dip.shift_tank_dip import ShiftTankDip
 
 
 class ShiftOpeningEntry(Document):
@@ -467,6 +471,21 @@ def make_shift_closing_entry(source_name, target_doc=None):
 		target.shift_opening_entry = source.name
 		target.period_start_date = source.posting_datetime
 
+	def update_meter_readings(obj: ShiftOpeningMeterReading, target: ClosingMeterReading, source_parent: ShiftOpeningEntry):
+		pump = frappe.db.get_value("Pump Nozzle", obj.nozzle, "pump")
+		fuel_item = frappe.db.get_value("Fuel Pump", pump, "fuel_item")
+		target.opening = obj.opening_reading
+		target.attendant = obj.employee
+		target.fuel_item = fuel_item
+		target.unit_price = get_price_from_shift_entry(source_parent.name, fuel_item)
+
+	def update_tank_readings(obj: ShiftTankDip, target: ShiftTankDip, source_parent: ShiftOpeningEntry):
+		target.opening = obj.physical_liters
+		target.book_stock = obj.physical_liters
+		target.physical_liters = 0
+		target.physical_dip_mm = 0
+		target.variation = 0
+
 	doclist = frappe.model.mapper.get_mapped_doc(
 		"Shift Opening Entry",
 		source_name,
@@ -479,6 +498,18 @@ def make_shift_closing_entry(source_name, target_doc=None):
 					"company": "company",
 					"supervisor": "supervisor",
 				},
+			},
+			"Shift Opening Meter Reading": {
+				"doctype": "Closing Meter Reading",
+				"field_map": {
+					"opening": "opening_reading",
+					"attendant": "employee",
+				},
+				"postprocess": update_meter_readings
+			},
+			"Shift Tank Dip": {
+				"doctype": "Shift Tank Dip",
+				"postprocess": update_tank_readings
 			}
 		},
 		target_doc,

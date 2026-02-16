@@ -44,7 +44,7 @@ class ShiftClosingEntry(Document):
 		from petrol_station.utils import (create_meter_sales,
 		                                  create_meter_readings,
 		                                  create_credit_sales_invoices,
-		                                  create_fuel_ledger)
+			                                  create_fuel_ledger)
 		try:
 			frappe.enqueue(
 				method=create_meter_sales,

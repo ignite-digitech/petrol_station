@@ -150,6 +150,7 @@ function getTankReadings(){
 				readings.forEach(function(reading) {
 					let row = cur_frm.add_child("tank_dips");
 					row.tank = reading.tank;
+					row.fuel_item = reading.fuel_item;
 					row.opening = reading.closing_balance;
 					row.book_stock = reading.closing_balance;
 				});

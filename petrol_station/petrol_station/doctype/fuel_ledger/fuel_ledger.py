@@ -297,7 +297,8 @@ def get_all_tanks_with_closing_balance():
 	query = """
 		SELECT
 			fl.fuel_tank as tank,
-			fl.closing_book_balance as closing_balance
+			fl.closing_book_balance as closing_balance,
+			fl.fuel_item
 		FROM `tabFuel Ledger` fl
 		INNER JOIN (
 			SELECT

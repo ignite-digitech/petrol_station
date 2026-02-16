@@ -10,12 +10,12 @@ frappe.ui.form.on("Shift Closing Entry", {
 			frm.toggle_display(['meter_readings'], true);
 		}
 
-		if (frm.is_new()) {
-			frm.toggle_display(['dip_readings'], false);
-		}
-		else {
-			frm.toggle_display(['dip_readings'], true);
-		}
+		// if (frm.is_new()) {
+		// 	frm.toggle_display(['dip_readings'], false);
+		// }
+		// else {
+		// 	frm.toggle_display(['dip_readings'], true);
+		// }
 
 		// Disable adding/removing rows in payment_reconciliation table
 		frm.fields_dict.payment_reconciliation.grid.cannot_add_rows = true;
