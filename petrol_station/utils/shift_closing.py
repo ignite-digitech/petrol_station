@@ -235,11 +235,9 @@ def create_sales_invoices_from_credit_sales(doc: Document | ShiftClosingEntry | 
     if isinstance(doc, str):
         doc = frappe.get_doc("Shift Closing Entry", doc)
 
+
     if not doc.credit_sales:
-        frappe.throw(
-            "No credit sales found to create Sales Invoices.",
-            frappe.ValidationError
-        )
+        return []
 
     created_invoices = []
 
@@ -314,6 +312,12 @@ def create_fuel_ledgers_from_dip_readings(doc: Document | ShiftClosingEntry | st
 
     created_ledgers = []
 
+    def get_tank_sales(tank):
+        return sum(dip.sales_qty for dip in doc.meter_readings if dip.tank == tank)
+
+    def get_tank_returns(tank):
+        return sum(dip.return_to_tank for dip in doc.meter_readings if dip.tank == tank)
+
     for dip_reading in doc.dip_readings:
         # Create FuelLedgerData dataclass instance
         ledger_data = FuelLedgerData(
@@ -325,8 +329,8 @@ def create_fuel_ledgers_from_dip_readings(doc: Document | ShiftClosingEntry | st
             posting_time=nowtime(),
             posting_datetime=get_datetime(),
             liters_in=0,
-            liters_out=doc.total_qty,
-            return_to_tank=0,
+            liters_out=get_tank_sales(dip_reading.tank),
+            return_to_tank=get_tank_returns(dip_reading.tank),
             physical_dip_reading_mm=dip_reading.physical_dip_mm,
             conversion_factor=None,
             water_level_mm=None,

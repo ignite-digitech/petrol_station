@@ -65,15 +65,15 @@ class ShiftClosingEntry(Document):
 				doc=self,
 			)
 
-			frappe.enqueue(
-				method=create_fuel_ledger,
-				queue='long',
-				doc=self,
-			)
+			# frappe.enqueue(
+			# 	method=create_fuel_ledger,
+			# 	queue='long',
+			# 	doc=self,
+			# )
 			# create_meter_sales(self)
 			# create_meter_readings(self)
 			# create_credit_sales_invoices(self)
-			# create_fuel_ledger(self)
+			create_fuel_ledger(self)
 		except FrappeException as e:
 			frappe.log_error(message=frappe.get_traceback(), title="Shift Closing Entry Submission Error")
 			frappe.throw(msg=str(e))
