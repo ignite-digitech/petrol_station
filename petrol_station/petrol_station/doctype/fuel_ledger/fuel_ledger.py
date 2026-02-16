@@ -95,7 +95,7 @@ def create_fuel_ledger(data: FuelLedgerData):
 	variation_liters, variation_percentage, variation_value = 0, 0, 0
 	shortage_status = "Normal"
 	if data.physical_dip_reading_liters:
-		closing_book_balance = (data.physical_dip_reading_liters + flt(data.liters_in)) - flt(data.liters_out)
+		closing_book_balance = data.physical_dip_reading_liters + flt(data.liters_in)
 
 		# Calculate variation_liters
 		variation_liters = flt(data.opening_book_balance) - flt(data.physical_dip_reading_liters) - flt(data.liters_out)
@@ -151,7 +151,8 @@ def create_fuel_ledger(data: FuelLedgerData):
 	fuel_ledger.insert()
 
 	if abs(flt(fuel_ledger.get("variation_liters"))) > 0:
-		create_stock_reconciliation(fuel_ledger)
+		if flt(fuel_ledger.get("physical_dip_reading_liters"), 2) != flt(fuel_ledger.get("opening_book_balance"), 2):
+			create_stock_reconciliation(fuel_ledger)
 
 	return fuel_ledger
 
