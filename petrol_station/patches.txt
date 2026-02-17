@@ -10,3 +10,4 @@ petrol_station.patches.seed_warehouse_types
 petrol_station.patches.add_custom_fields #2026-02-13 16:52
 petrol_station.patches.seed_parent_tank_warehouse #2026-02-06
 petrol_station.patches.seed_walkin_customer
+petrol_station.patches.disable_mode_of_payments
