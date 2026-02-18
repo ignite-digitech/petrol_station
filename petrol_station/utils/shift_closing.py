@@ -568,3 +568,130 @@ def cancel_journal_entries_for_expenses(doc: Document | ShiftClosingEntry | str)
             )
 
     return cancelled_journals
+
+
+def create_sales_invoices_from_item_sales(doc: Document | ShiftClosingEntry | str):
+    """
+    Create Sales Invoices from item sales entries in Shift Closing Entry.
+    Groups sales by attendant - rows with attendant are grouped by attendant,
+    rows without attendant are grouped together.
+
+    Args:
+        doc (Document | ShiftClosingEntry | str): Shift Closing Entry document or name
+
+    Returns:
+        list: List of created and submitted Sales Invoice documents
+            [
+                {
+                    "name": "SINV-00001",
+                    "attendant": "Employee Name",
+                    "grand_total": 5000.0
+                }
+            ]
+
+    Raises:
+        frappe.ValidationError: If no item sales exist
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    if not doc.items_sales:
+        return []
+
+    # Get walk-in customer
+    walk_in_customer = frappe.db.get_single_value("Selling Settings", "customer_for_walk_in") or "Walk-In"
+
+    created_invoices = []
+
+    # Group item sales by attendant
+    attendant_sales = {}
+    for sale in doc.items_sales:
+        attendant = sale.attendant or "No Attendant"
+        if attendant not in attendant_sales:
+            attendant_sales[attendant] = []
+        attendant_sales[attendant].append(sale)
+
+    # Create a Sales Invoice for each attendant group
+    for attendant, sales in attendant_sales.items():
+        # Prepare invoice data
+        invoice_data = {
+            "doctype": "Sales Invoice",
+            "customer": walk_in_customer,
+            "posting_date": doc.posting_date,
+            "posting_time": doc.posting_time,
+            "set_posting_time": 1,
+            "company": doc.company,
+            "items": []
+        }
+
+        # Add attendant field if it's not the "No Attendant" group
+        if attendant != "No Attendant":
+            invoice_data["attendant"] = attendant
+
+        # Add items for this attendant group
+        for sale in sales:
+            invoice_data["items"].append({
+                "item_code": sale.item_code,
+                "qty": sale.qty,
+                "rate": sale.rate,
+                "amount": sale.amount,
+                "ref_shift": doc.name,
+            })
+
+        # Create Sales Invoice
+        sales_invoice = frappe.get_doc(invoice_data)
+        sales_invoice.flags.ignore_permissions = True
+        sales_invoice.insert()
+        sales_invoice.submit()
+
+        created_invoices.append({
+            "name": sales_invoice.name,
+            "attendant": attendant if attendant != "No Attendant" else None,
+            "grand_total": sales_invoice.grand_total
+        })
+
+    return created_invoices
+
+
+def cancel_sales_invoices_from_item_sales(doc: Document | ShiftClosingEntry | str):
+    """
+    Cancel all Sales Invoices created from item sales in a Shift Closing Entry.
+    This function is separate from cancel_invoices_from_shift_closing to handle
+    both fuel meter sales and item sales invoices.
+
+    Args:
+        doc (Document | ShiftClosingEntry | str): Shift Closing Entry document or name
+
+    Returns:
+        list: List of cancelled Sales Invoice names
+            ["SINV-00001", "SINV-00002"]
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    # Find all Sales Invoices linked to this shift closing entry via ref_shift
+    invoice_items = frappe.get_all(
+        "Sales Invoice Item",
+        filters={
+            "ref_shift": doc.name
+        },
+        pluck="parent",
+        distinct=True
+    )
+
+    cancelled_invoices = []
+
+    for invoice in invoice_items:
+        try:
+            invoice_doc = frappe.get_doc("Sales Invoice", invoice)
+            if invoice_doc.docstatus == 1:
+                invoice_doc.flags.ignore_permissions = True
+                invoice_doc.cancel()
+                cancelled_invoices.append(invoice_doc.name)
+        except Exception as e:
+            frappe.log_error(
+                title=f"Error Cancelling Invoice {invoice}",
+                message=str(e)
+            )
+
+    return cancelled_invoices
