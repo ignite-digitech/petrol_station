@@ -413,4 +413,18 @@ function update_all_dip_book_stocks(frm) {
 	}
 }
 
+frappe.ui.form.on("Shift Expense", {
+	amount(frm, cdt, cdn) {
+		calculate_total_expense(frm);
+	}
+})
+
+function calculate_total_expense(frm) {
+	let total_expense = 0;
+	frm.doc.expenses.forEach(function(row) {
+		total_expense += flt(row.amount);
+	});
+	frm.set_value('total_expenses', total_expense);
+}
+
 

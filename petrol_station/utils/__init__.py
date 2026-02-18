@@ -4,7 +4,9 @@ from .shift_closing import (create_and_submit_sales_invoices as create_meter_sal
                             create_fuel_ledgers_from_dip_readings as create_fuel_ledger,
                             cancel_invoices_from_shift_closing,
                             cancel_fuel_ledgers,
-                            cancel_pump_meter_readings)
+                            cancel_pump_meter_readings,
+                            create_journal_entries_for_expenses,
+                            cancel_journal_entries_for_expenses)
 
 __all__ = [
     "create_meter_sales",
@@ -13,5 +15,7 @@ __all__ = [
     "create_fuel_ledger",
     "cancel_invoices_from_shift_closing",
     "cancel_fuel_ledgers",
-    "cancel_pump_meter_readings"
+    "cancel_pump_meter_readings",
+    "create_journal_entries_for_expenses",
+    "cancel_journal_entries_for_expenses"
 ]

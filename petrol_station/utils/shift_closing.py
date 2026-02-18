@@ -439,3 +439,132 @@ def cancel_fuel_ledgers(doc: Document | ShiftClosingEntry | str):
     cancel_fuel_ledgers_by_voucher(doc.doctype, doc.name)
 
 
+def create_journal_entries_for_expenses(doc: Document | ShiftClosingEntry | str):
+    """
+    Create Journal Entry documents from expenses in a Shift Closing Entry.
+    Expenses are grouped by mode_of_payment so one Journal Entry is created
+    per payment method.
+
+    Each Journal Entry contains:
+    - A debit row for each expense account
+    - A credit row for each expense against the mode of payment's default account
+
+    Args:
+        doc (Document | ShiftClosingEntry | str): Shift Closing Entry document or name
+
+    Returns:
+        list: List of created Journal Entry names
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    if not doc.expenses:
+        return []
+
+    # Group expenses by mode_of_payment
+    expenses_by_mop = {}
+    for expense in doc.expenses:
+        mop = expense.mode_of_payment
+        if mop not in expenses_by_mop:
+            expenses_by_mop[mop] = []
+        expenses_by_mop[mop].append(expense)
+
+    created_journals = []
+
+    for mode_of_payment, expenses in expenses_by_mop.items():
+        # Get the default account for this mode of payment and company
+        payment_account = frappe.db.get_value(
+            "Mode of Payment Account",
+            {"parent": mode_of_payment, "company": doc.company},
+            "default_account"
+        )
+
+        if not payment_account:
+            frappe.throw(
+                f"No default account found for Mode of Payment '{mode_of_payment}' "
+                f"and Company '{doc.company}'. Please set it up in Mode of Payment master.",
+                frappe.ValidationError
+            )
+
+        # Build journal entry
+        journal_entry = frappe.get_doc({
+            "doctype": "Journal Entry",
+            "posting_date": doc.posting_date,
+            "company": doc.company,
+            "voucher_type": "Journal Entry",
+            "accounts": []
+        })
+
+        for expense in expenses:
+            # Debit the expense account
+            journal_entry.append("accounts", {
+                "account": expense.expense,
+                "debit_in_account_currency": flt(expense.amount),
+                "credit_in_account_currency": 0,
+                "reference_type": "Shift Closing Entry",
+                "reference_name": doc.name,
+                "reference_detail_no": expense.name,
+                "user_remark": expense.remarks or ""
+            })
+
+            # Credit the mode of payment account
+            journal_entry.append("accounts", {
+                "account": payment_account,
+                "debit_in_account_currency": 0,
+                "credit_in_account_currency": flt(expense.amount),
+                "reference_type": "Shift Closing Entry",
+                "reference_name": doc.name,
+                "reference_detail_no": expense.name,
+                "user_remark": expense.remarks or ""
+            })
+
+        journal_entry.flags.ignore_permissions = True
+        journal_entry.insert()
+        journal_entry.submit()
+
+        created_journals.append(journal_entry.name)
+
+    return created_journals
+
+
+def cancel_journal_entries_for_expenses(doc: Document | ShiftClosingEntry | str):
+    """
+    Cancel all Journal Entries created from a Shift Closing Entry's expenses.
+
+    Args:
+        doc (Document | ShiftClosingEntry | str): Shift Closing Entry document or name
+
+    Returns:
+        list: List of cancelled Journal Entry names
+    """
+    if isinstance(doc, str):
+        doc = frappe.get_doc("Shift Closing Entry", doc)
+
+    # Find all Journal Entry Account rows referencing this Shift Closing Entry
+    journal_entries = frappe.get_all(
+        "Journal Entry Account",
+        filters={
+            "reference_type": "Shift Closing Entry",
+            "reference_name": doc.name,
+            "docstatus": 1
+        },
+        pluck="parent",
+        distinct=True
+    )
+
+    cancelled_journals = []
+
+    for je_name in journal_entries:
+        try:
+            je_doc = frappe.get_doc("Journal Entry", je_name)
+            if je_doc.docstatus == 1:
+                je_doc.flags.ignore_permissions = True
+                je_doc.cancel()
+                cancelled_journals.append(je_name)
+        except Exception as e:
+            frappe.log_error(
+                title=f"Error Cancelling Journal Entry {je_name}",
+                message=str(e)
+            )
+
+    return cancelled_journals

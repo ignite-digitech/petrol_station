@@ -47,7 +47,8 @@ class ShiftClosingEntry(Document):
 		from petrol_station.utils import (create_meter_sales,
 		                                  create_meter_readings,
 		                                  create_credit_sales_invoices,
-			                                  create_fuel_ledger)
+			                                  create_fuel_ledger,
+		                                  create_journal_entries_for_expenses)
 		try:
 			frappe.enqueue(
 				method=create_meter_sales,
@@ -77,6 +78,7 @@ class ShiftClosingEntry(Document):
 			# create_meter_readings(self)
 			# create_credit_sales_invoices(self)
 			create_fuel_ledger(self)
+			create_journal_entries_for_expenses(self)
 		except FrappeException as e:
 			frappe.log_error(message=frappe.get_traceback(), title="Shift Closing Entry Submission Error")
 			frappe.throw(msg=str(e))
@@ -84,9 +86,11 @@ class ShiftClosingEntry(Document):
 	def on_cancel(self):
 		from petrol_station.utils import (cancel_invoices_from_shift_closing,
 		                                  cancel_fuel_ledgers,
-		                                  cancel_pump_meter_readings)
+		                                  cancel_pump_meter_readings,
+		                                  cancel_journal_entries_for_expenses)
 		cancel_invoices_from_shift_closing(self)
 		cancel_fuel_ledgers(self)
 		cancel_pump_meter_readings(self)
+		cancel_journal_entries_for_expenses(self)
 
 

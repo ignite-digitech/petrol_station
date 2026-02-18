@@ -17,6 +17,7 @@ class ShiftExpense(Document):
 		amount: DF.Currency
 		employee: DF.Link | None
 		expense: DF.Link
+		mode_of_payment: DF.Link
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
