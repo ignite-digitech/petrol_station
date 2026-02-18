@@ -427,4 +427,45 @@ function calculate_total_expense(frm) {
 	frm.set_value('total_expenses', total_expense);
 }
 
+frappe.ui.form.on("Shift Item Sales", {
+	item_code(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
 
+		frappe.call({
+			method: "petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading.get_selling_price",
+			args: {
+				item_code: row.item_code,
+				price_list: "Standard Selling",
+			},
+			freeze: true,
+			callback: function(r) {
+				frappe.model.set_value(cdt, cdn, 'rate', r.message)
+
+				calculate_item_amount(frm, cdt, cdn);
+			}
+		})
+
+	},
+	qty(frm, cdt, cdn) {
+		calculate_item_amount(frm, cdt, cdn);
+	},
+	rate(frm, cdt, cdn) {
+		calculate_item_amount(frm, cdt, cdn);
+	}
+})
+
+function calculate_item_amount(frm, cdt, cdn) {
+	let row = locals[cdt][cdn];
+	let amount = flt(row.qty) * flt(row.rate);
+	frappe.model.set_value(cdt, cdn, 'amount', amount);
+
+	calculate_total_item_sales(frm);
+}
+
+function calculate_total_item_sales(frm) {
+	let total_item_sales = 0;
+	frm.doc.items_sales.forEach(function(row) {
+		total_item_sales += flt(row.amount);
+	});
+	frm.set_value('total_items_sales', total_item_sales);
+}

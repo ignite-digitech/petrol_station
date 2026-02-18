@@ -18,6 +18,7 @@ class ShiftClosingEntry(Document):
 		from petrol_station.petrol_station.doctype.closing_meter_reading.closing_meter_reading import ClosingMeterReading
 		from petrol_station.petrol_station.doctype.shift_credit_sale.shift_credit_sale import ShiftCreditSale
 		from petrol_station.petrol_station.doctype.shift_expense.shift_expense import ShiftExpense
+		from petrol_station.petrol_station.doctype.shift_item_sales.shift_item_sales import ShiftItemSales
 		from petrol_station.petrol_station.doctype.shift_tank_dip.shift_tank_dip import ShiftTankDip
 
 		amended_from: DF.Link | None
@@ -25,6 +26,7 @@ class ShiftClosingEntry(Document):
 		credit_sales: DF.Table[ShiftCreditSale]
 		dip_readings: DF.Table[ShiftTankDip]
 		expenses: DF.Table[ShiftExpense]
+		items_sales: DF.Table[ShiftItemSales]
 		managers_comments: DF.SmallText | None
 		meter_readings: DF.Table[ClosingMeterReading]
 		payment_reconciliation: DF.Table[POSClosingEntryDetail]
@@ -36,6 +38,7 @@ class ShiftClosingEntry(Document):
 		supervisor: DF.Link
 		total_credit_sales: DF.Currency
 		total_expenses: DF.Currency
+		total_items_sales: DF.Currency
 		total_meter_sales: DF.Currency
 		total_qty: DF.Float
 		total_returns: DF.Float
