@@ -132,9 +132,9 @@ def create_and_submit_sales_invoices(doc: Document | ShiftClosingEntry | str):
             "set_posting_time": 1,
             "company": invoice_data["company"],
             "attendant": invoice_data["attendant"],
+            "update_stock": 1,
             "items": []
         })
-
         # Add items
         for item in invoice_data["items"]:
             sales_invoice.append("items", {
@@ -142,6 +142,7 @@ def create_and_submit_sales_invoices(doc: Document | ShiftClosingEntry | str):
                 "qty": item["qty"],
                 "rate": item["rate"],
                 "ref_shift": item["ref_shift"],
+                "warehouse": item["warehouse"]
             })
 
         # Insert and submit
