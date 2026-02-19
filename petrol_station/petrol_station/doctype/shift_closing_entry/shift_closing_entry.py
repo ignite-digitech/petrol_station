@@ -42,8 +42,6 @@ class ShiftClosingEntry(Document):
 		total_meter_sales: DF.Currency
 		total_qty: DF.Float
 		total_returns: DF.Float
-		total_shift_revenue: DF.Currency
-		total_variation_l: DF.Float
 	# end: auto-generated types
 
 	def on_submit(self):

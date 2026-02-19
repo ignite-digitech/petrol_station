@@ -22,6 +22,7 @@
   "section_break_kaqp",
   "column_break_uhfj",
   "total_returns",
+  "managers_comments",
   "column_break_lrqh",
   "total_qty",
   "total_meter_sales",
@@ -41,10 +42,7 @@
   "items_sales",
   "total_items_sales",
   "summaries_tab",
-  "total_shift_revenue",
-  "total_variation_l",
-  "column_break_lvff",
-  "managers_comments"
+  "summary"
  ],
  "fields": [
   {
@@ -203,24 +201,6 @@
    "label": "Summary"
   },
   {
-   "default": "0",
-   "fieldname": "total_shift_revenue",
-   "fieldtype": "Currency",
-   "label": "Total Shift Revenue",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "total_variation_l",
-   "fieldtype": "Float",
-   "label": "Total Variation (L)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_lvff",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "managers_comments",
    "fieldtype": "Small Text",
    "label": "Manager's Comments"
@@ -276,13 +256,18 @@
    "fieldtype": "Currency",
    "label": "Total Items Sales",
    "read_only": 1
+  },
+  {
+   "fieldname": "summary",
+   "fieldtype": "HTML",
+   "label": "summary"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-18 14:39:48.272147",
+ "modified": "2026-02-19 11:55:31.887959",
  "modified_by": "Administrator",
  "module": "Petrol Station",
  "name": "Shift Closing Entry",

@@ -163,9 +163,27 @@ frappe.ui.form.on("Shift Credit Sale", {
     },
     rate(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
-        let amount = flt(row.rate) * flt(row.qty);
 
-        frappe.model.set_value(cdt, cdn, 'amount', amount);
+        // If rate and amount are both set and > 0, calculate qty
+        if (flt(row.rate) > 0 && flt(row.amount) > 0) {
+            let qty = flt(row.amount) / flt(row.rate);
+            frappe.model.set_value(cdt, cdn, 'qty', qty);
+        } else {
+            let amount = flt(row.rate) * flt(row.qty);
+            frappe.model.set_value(cdt, cdn, 'amount', amount);
+        }
+
+        calculate_total_credit_sale(frm);
+    },
+    amount(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+
+        // If rate and amount are both set and > 0, calculate qty
+        if (flt(row.rate) > 0 && flt(row.amount) > 0) {
+            let qty = flt(row.amount) / flt(row.rate);
+            frappe.model.set_value(cdt, cdn, 'qty', qty);
+        }
+
         calculate_total_credit_sale(frm);
     }
 });
