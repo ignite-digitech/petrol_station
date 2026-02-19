@@ -179,7 +179,7 @@ class ShiftClosingEntry(Document):
 			attendant = row.attendant or 'Unknown'
 			attendant_data[attendant]['credit_qty'] += row.qty or 0
 			attendant_data[attendant]['credit_amount'] += row.amount or 0
-			attendant_data[attendant]['total_amount'] += row.amount or 0
+			# attendant_data[attendant]['total_amount'] += row.amount or 0
 
 		# Item sales
 		for row in self.items_sales:
