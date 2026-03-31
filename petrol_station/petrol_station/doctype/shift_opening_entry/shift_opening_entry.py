@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import flt, today, nowtime
 from petrol_station.petrol_station.doctype.closing_meter_reading.closing_meter_reading import ClosingMeterReading
@@ -74,7 +75,7 @@ class ShiftOpeningEntry(Document):
 		"""
 		if not self.opening_meter_readings:
 			frappe.throw(
-				"No opening meter readings found to create Pump Meter Readings.",
+				_("No opening meter readings found to create Pump Meter Readings."),
 				frappe.ValidationError
 			)
 
@@ -138,7 +139,7 @@ class ShiftOpeningEntry(Document):
 		# Mark each reading as cancelled
 		for reading_name in pump_meter_readings:
 			frappe.db.set_value("Pump Meter Reading", reading_name, "is_cancelled", 1)
-
+		# nosemgrep commit immediately to update meter readings
 		frappe.db.commit()
 
 		return len(pump_meter_readings)
@@ -395,7 +396,7 @@ def get_opening_balances_with_expected(shift_opening_entry, total_sales=None, pa
 		credit_sales = 0
 
 	if not shift_opening_entry:
-		frappe.throw("Shift Opening Entry is required")
+		frappe.throw(_("Shift Opening Entry is required"))
 
 	# Parse payments if it's a JSON string
 	if payments and isinstance(payments, str):

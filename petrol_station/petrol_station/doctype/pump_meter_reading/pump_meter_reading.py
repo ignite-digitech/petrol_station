@@ -7,6 +7,7 @@ from erpnext.stock.get_item_details import get_price_list_rate
 from dataclasses import dataclass
 from typing import Optional
 
+from frappe.types.filter import DateTime
 from frappe.utils import flt
 
 
@@ -125,9 +126,9 @@ def create_pump_meter_reading(data: PumpMeterReadingData):
 
 
 @frappe.whitelist()
-def get_selling_price(item_code, price_list=None, customer=None):
+def get_selling_price(item_code: str, price_list: str=None, customer: str=None):
 	"""
-	Get selling price for an item from Item Price.
+	Get a selling price for an item from Item Price.
 
 	Args:
 		item_code (str): Item code
@@ -140,7 +141,7 @@ def get_selling_price(item_code, price_list=None, customer=None):
 	if not item_code:
 		return 0
 
-	# Get default price list if not provided
+	# Get a default price list if not provided
 	if not price_list:
 		price_list = frappe.db.get_single_value("Selling Settings", "selling_price_list")
 
@@ -162,7 +163,7 @@ def get_selling_price(item_code, price_list=None, customer=None):
 		return price or 0
 
 @frappe.whitelist()
-def get_last_closing_qty_for_nozzle(nozzle, posting_date=None, posting_time=None):
+def get_last_closing_qty_for_nozzle(nozzle: str, posting_date: str= None, posting_time: str=None):
 	"""
 	Fetch the last closing_qty for a nozzle with optional date and time filters.
 
@@ -229,7 +230,7 @@ def get_last_closing_qty_for_nozzle(nozzle, posting_date=None, posting_time=None
 
 
 @frappe.whitelist()
-def auto_fetch_nozzle_opening_reading(nozzle, posting_date=None, posting_time=None):
+def auto_fetch_nozzle_opening_reading(nozzle: str, posting_date: str=None, posting_time: str=None):
 	"""
 	Auto-fetch the closing balance for a nozzle and return it for updating opening_reading and expected_reading.
 

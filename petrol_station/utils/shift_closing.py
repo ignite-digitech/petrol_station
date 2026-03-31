@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import flt, today, nowtime, now, get_datetime
 from petrol_station.petrol_station.doctype.shift_closing_entry.shift_closing_entry import ShiftClosingEntry
@@ -177,7 +178,7 @@ def create_pump_meter_readings_from_closing(doc: Document | ShiftClosingEntry | 
 
     if not doc.meter_readings:
         frappe.throw(
-            "No meter readings found to create Pump Meter Readings.",
+            _("No meter readings found to create Pump Meter Readings."),
             frappe.ValidationError
         )
 
@@ -307,7 +308,7 @@ def create_fuel_ledgers_from_dip_readings(doc: Document | ShiftClosingEntry | st
 
     if not doc.dip_readings:
         frappe.throw(
-            "No dip readings found to create Fuel Ledgers.",
+            _("No dip readings found to create Fuel Ledgers."),
             frappe.ValidationError
         )
 
@@ -424,6 +425,7 @@ def cancel_pump_meter_readings(doc: Document | ShiftClosingEntry | str):
         reading.is_cancelled = 1
         reading.save(ignore_permissions=True)
 
+    # nosemgrep Commit transaction after each operation since multiple operations are being performed
     frappe.db.commit()
 
     return len(pump_readings)
@@ -482,8 +484,8 @@ def create_journal_entries_for_expenses(doc: Document | ShiftClosingEntry | str)
 
         if not payment_account:
             frappe.throw(
-                f"No default account found for Mode of Payment '{mode_of_payment}' "
-                f"and Company '{doc.company}'. Please set it up in Mode of Payment master.",
+                _(f"No default account found for Mode of Payment '{mode_of_payment}' "
+                f"and Company '{doc.company}'. Please set it up in Mode of Payment master."),
                 frappe.ValidationError
             )
 

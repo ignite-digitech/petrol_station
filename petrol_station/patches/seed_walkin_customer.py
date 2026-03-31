@@ -15,7 +15,6 @@ def execute():
 			"territory": frappe.db.get_single_value("Selling Settings", "territory") or "All Territories"
 		})
 		customer.insert(ignore_permissions=True)
-		frappe.db.commit()
 
 	# Set customer_for_walk_in in Selling Settings if field exists
 	selling_settings = frappe.get_single("Selling Settings")

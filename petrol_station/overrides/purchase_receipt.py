@@ -123,6 +123,7 @@ def cancel_fuel_ledger_entries(pr_doc):
 	for ledger_name in fuel_ledgers:
 		frappe.db.set_value("Fuel Ledger", ledger_name, "is_cancelled", 1)
 
+	# nosemgrep We are commiting since we want to mark all ledgers as cancelled immediately
 	frappe.db.commit()
 
 	return len(fuel_ledgers)

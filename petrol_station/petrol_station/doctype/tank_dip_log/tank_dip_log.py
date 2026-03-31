@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import today, getdate, nowtime, get_datetime
 from petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger import create_fuel_ledger, FuelLedgerData, \
@@ -48,7 +49,7 @@ class TankDipLog(Document):
 	def validate_posting_date(self):
 		"""Validate that posting date is not in the future."""
 		if self.posting_date and getdate(self.posting_date) > getdate(today()):
-			frappe.throw("Posting Date cannot be a future date")
+			frappe.throw(_("Posting Date cannot be a future date"))
 
 	def calculate_stock_in(self):
 		"""Calculate total stock_in from deliveries table."""

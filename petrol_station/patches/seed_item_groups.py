@@ -14,5 +14,3 @@ def execute():
                 "parent_item_group": "All Item Groups"
             })
             doc.insert()
-
-    frappe.db.commit()

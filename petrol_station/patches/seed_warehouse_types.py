@@ -10,4 +10,3 @@ def execute():
             "description": "Fuel tank warehouse type for storing fuel"
         })
         doc.insert()
-        frappe.db.commit()

@@ -3,7 +3,7 @@
 
 import frappe
 from erpnext.stock.get_item_details import get_valuation_rate
-from frappe import DoesNotExistError
+from frappe import DoesNotExistError, _
 from frappe.model.document import Document
 from dataclasses import dataclass
 from typing import Optional
@@ -222,8 +222,8 @@ def create_stock_reconciliation(fuel_ledger: FuelLedger | Document | str):
 		stock_reconciliation.insert(ignore_permissions=True)
 		stock_reconciliation.submit()
 	except Exception as e:
-		frappe.log_error(title="Fuel Ledger Reconciliation Error", message=str(e))
-		frappe.throw(msg=str(e), title="Fuel Ledger Reconciliation Error")
+		frappe.log_error(title=_("Fuel Ledger Reconciliation Error"), message=_(str(e)))
+		frappe.throw(msg=_(str(e)), title=_("Stock Reconciliation Error"))
 	return None
 
 def cancel_stock_reconciliation(fuel_ledger: FuelLedger | Document):
@@ -274,6 +274,7 @@ def cancel_fuel_ledgers_by_voucher(voucher_type: str, voucher_name: str):
 
 		# cancel_stock_reconciliation is automatically called in on_update hook
 
+	# nosemgrep Update the ledger immediately
 	frappe.db.commit()
 
 	return len(fuel_ledgers)

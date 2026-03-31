@@ -1,6 +1,7 @@
 # Copyright (c) 2026, Ignite Digital and contributors
 # For license information, please see license.txt
 import frappe
+from frappe import _
 from frappe.frappeclient import FrappeException
 # import frappe
 from frappe.model.document import Document
@@ -84,7 +85,7 @@ class ShiftClosingEntry(Document):
 			create_sales_invoices_from_item_sales(self)
 		except FrappeException as e:
 			frappe.log_error(message=frappe.get_traceback(), title="Shift Closing Entry Submission Error")
-			frappe.throw(msg=str(e))
+			frappe.throw(msg=_(str(e)))
 
 	def on_cancel(self):
 		from petrol_station.utils import (cancel_invoices_from_shift_closing,

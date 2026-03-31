@@ -369,7 +369,7 @@ frappe.ui.form.on("Shift Tank Dip", {
 						let opening = r.message
                         frappe.model.set_value(cdt, cdn, 'opening',opening);
 
-						let book_stock = get_book_stock(row.tank, opening)
+						let book_stock = get_book_stock(frm, row.tank, opening)
 
 						frappe.model.set_value(cdt, cdn, 'book_stock', book_stock)
                     }
@@ -382,7 +382,7 @@ frappe.ui.form.on("Shift Tank Dip", {
 		let row = locals[cdt][cdn]
 
 		if (row.physical_liters){
-			let book_stock = get_book_stock(row.tank, row.opening)
+			let book_stock = get_book_stock(frm, row.tank, row.opening)
 			frappe.model.set_value(cdt, cdn, 'book_stock', book_stock)
 
 			let variation = calculate_dip_variation(cdt, cdn, book_stock)
@@ -409,18 +409,18 @@ function calculate_dip_variation(cdt, cdn, book_stock){
 
 }
 
-function get_book_stock(tank, opening){
-	let totals = get_sales_qty_sum_for_tank(tank)
+function get_book_stock(frm, tank, opening){
+	let totals = get_sales_qty_sum_for_tank(frm, tank)
 	return flt(opening) - flt(totals.sales_qty) - flt(totals.returns)
 }
 
-function get_sales_qty_sum_for_tank(tank) {
+function get_sales_qty_sum_for_tank(frm, tank) {
 	let total_sales_qty = 0;
 	let total_returns = 0
 
 
-	if (cur_frm.doc.meter_readings) {
-		cur_frm.doc.meter_readings.forEach(function(row) {
+	if (frm.doc.meter_readings) {
+		frm.doc.meter_readings.forEach(function(row) {
 			if (row.tank === tank) {
 				total_sales_qty += flt(row.sales_qty);
 				total_returns += flt(row.return_to_tank)
@@ -441,7 +441,7 @@ function update_all_dip_book_stocks(frm) {
 	if (frm.doc.dip_readings) {
 		frm.doc.dip_readings.forEach(function(dip_row) {
 			if (dip_row.tank && dip_row.opening !== undefined) {
-				let book_stock = get_book_stock(dip_row.tank, dip_row.opening);
+				let book_stock = get_book_stock(frm, dip_row.tank, dip_row.opening);
 				frappe.model.set_value(dip_row.doctype, dip_row.name, 'book_stock', book_stock);
 
 				// Recalculate variation if physical_liters exists

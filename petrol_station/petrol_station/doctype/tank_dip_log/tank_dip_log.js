@@ -19,7 +19,7 @@ frappe.ui.form.on("Tank Dip Log", {
             callback: function(r) {
                 if (r.message) {
                     frm.set_value("opening_dip", r.message);
-                    cur_frm.refresh_field("opening_dip");
+                    frm.refresh_field("opening_dip");
                 }
             }
         })
@@ -35,25 +35,25 @@ frappe.ui.form.on("Fuel Delivery", {
         }
     },
     qty: function(frm, cdt, cdn) {
-        calculate_stock_in()
+        calculate_stock_in(frm)
     },
     rate: function(frm, cdt, cdn) {
-        calculate_stock_in()
+        calculate_stock_in(frm)
     },
     deliveries_remove: function(frm) {
-        calculate_stock_in()
+        calculate_stock_in(frm)
     }
 });
 
-function calculate_stock_in() {
+function calculate_stock_in(frm) {
     let total_stock_in = 0;
-    if (cur_frm.doc.deliveries) {
-        cur_frm.doc.deliveries.forEach(function(delivery) {
+    if (frm.doc.deliveries) {
+        frm.doc.deliveries.forEach(function(delivery) {
             if (delivery.qty) {
                 total_stock_in += delivery.qty;
             }
         });
     }
-    cur_frm.set_value("stock_in", total_stock_in);
+    frm.set_value("stock_in", total_stock_in);
 }
 

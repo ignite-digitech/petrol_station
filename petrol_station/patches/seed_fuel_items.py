@@ -27,5 +27,5 @@ def execute():
                 **item_data
             })
             doc.insert()
-
+    # nosemgrep since it is a seed we have to commit
     frappe.db.commit()

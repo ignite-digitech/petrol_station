@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 
@@ -21,7 +22,7 @@ class PumpNozzle(Document):
 	def autoname(self):
 		"""Generate unique nozzle name in format: {pump}-{number}"""
 		if not self.pump:
-			frappe.throw("Pump is required to generate nozzle name")
+			frappe.throw(_("Pump is required to generate nozzle name"))
 
 		# Count existing nozzles for this pump
 		nozzle_count = frappe.db.count("Pump Nozzle", filters={"pump": self.pump})
@@ -36,7 +37,7 @@ class PumpNozzle(Document):
 		if self.pump:
 			return frappe.db.get_value("Fuel Pump", {"name": self.pump}, "tank")
 		else:
-			frappe.throw(msg="Please configure pump first, attach tank")
+			frappe.throw(msg=_("Please configure pump first, attach tank"))
 			return None
 
 

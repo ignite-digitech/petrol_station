@@ -3,11 +3,11 @@
 
 frappe.ui.form.on("Fuel Pump", {
 	refresh(frm) {
-        cur_frm.add_custom_button(__("Create Tank"), function() {
-            createTank()
+        frm.add_custom_button(__("Create Tank"), function() {
+            createTank(frm);
         })
 
-        cur_frm.set_query("nozzle", "initial_readings", function(doc, cdt, cdn) {
+        frm.set_query("nozzle", "initial_readings", function(doc, cdt, cdn) {
             return {
                 filters: {
                     "pump": doc.name
@@ -15,13 +15,13 @@ frappe.ui.form.on("Fuel Pump", {
             }
         })
 
-        if (cur_frm.is_new()){
-            cur_frm.set_df_property("initial_readings", "hidden", 1)
+        if (frm.is_new()){
+            frm.set_df_property("initial_readings", "hidden", 1)
         }
 	},
 });
 
-function createTank(){
+function createTank(frm){
     let dialog = new frappe.ui.Dialog({
                     title: __("Create Fuel Tank"),
                     fields: [
@@ -50,7 +50,7 @@ function createTank(){
                     primary_action_label: __("Create"),
                     primary_action(values) {
                         // Get company and its abbreviation
-                        let company = cur_frm.doc.company || frappe.defaults.get_default("company");
+                        let company = frm.doc.company || frappe.defaults.get_default("company");
 
                         frappe.db.get_value("Company", company, "abbr", (r) => {
                             if (r && r.abbr) {
@@ -72,7 +72,7 @@ function createTank(){
                                     callback: (r) => {
                                         if (r.message) {
                                             frappe.msgprint(__("Fuel Tank {0} created successfully", [r.message.name]));
-                                            cur_frm.set_value("tank", r.message.name);
+                                            frm.set_value("tank", r.message.name);
                                             dialog.hide();
                                         }
                                     }

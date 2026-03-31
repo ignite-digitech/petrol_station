@@ -3,7 +3,7 @@
 
 frappe.ui.form.on("Shift Opening Entry", {
 	refresh(frm) {
-		cur_frm.add_custom_button("Close Shift", () => {
+		frm.add_custom_button("Close Shift", () => {
 			frappe.model.open_mapped_doc({
 				method: "petrol_station.petrol_station.doctype.shift_opening_entry.shift_opening_entry.make_shift_closing_entry",
 				frm: frm,
@@ -15,10 +15,10 @@ frappe.ui.form.on("Shift Opening Entry", {
 	onload(frm){
 		if (frm.is_new()) {
 			frappe.run_serially([
-				getPumpReadings,
-				getTankReadings,
-				getPaymentMethods,
-				getFuelPrices
+				() => {getPumpReadings(frm)},
+				() => {getTankReadings(frm)},
+				() => {getPaymentMethods(frm)},
+				() => {getFuelPrices(frm)}
 			])
 		}
 	}
@@ -115,7 +115,7 @@ frappe.ui.form.on("Shift Tank Dip", {
 
 })
 
-function getPumpReadings(){
+function getPumpReadings(frm){
 	frappe.call({
 		method: 'petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading.get_all_nozzles_with_opening_reading',
 		freeze: true,
@@ -123,22 +123,22 @@ function getPumpReadings(){
 		callback: function(r) {
 			if (r.message) {
 				let readings = r.message;
-				cur_frm.clear_table("opening_meter_readings");
+				frm.clear_table("opening_meter_readings");
 				readings.forEach(function(reading) {
-					let row = cur_frm.add_child("opening_meter_readings");
+					let row = frm.add_child("opening_meter_readings");
 					row.nozzle = reading.nozzle;
 					row.pump = reading.pump;
 					row.tank = reading.tank;
 					row.opening_reading = reading.last_reading;
 					row.expected_reading = reading.last_reading;
 				});
-				cur_frm.refresh_field("opening_meter_readings");
+				frm.refresh_field("opening_meter_readings");
 			}
 		}
 	})
 }
 
-function getTankReadings(){
+function getTankReadings(frm){
 	frappe.call({
 		method: 'petrol_station.petrol_station.doctype.fuel_ledger.fuel_ledger.get_all_tanks_with_closing_balance',
 		freeze: true,
@@ -146,38 +146,38 @@ function getTankReadings(){
 		callback: function(r) {
 			if (r.message) {
 				let readings = r.message;
-				cur_frm.clear_table("tank_dips");
+				frm.clear_table("tank_dips");
 				readings.forEach(function(reading) {
-					let row = cur_frm.add_child("tank_dips");
+					let row = frm.add_child("tank_dips");
 					row.tank = reading.tank;
 					row.fuel_item = reading.fuel_item;
 					row.opening = reading.closing_balance;
 					row.book_stock = reading.closing_balance;
 				});
-				cur_frm.refresh_field("tank_dips");
+				frm.refresh_field("tank_dips");
 			}
 		}
 	})
 }
 
-function getPaymentMethods(){
+function getPaymentMethods(frm){
 		frappe.db.get_list("Mode of Payment", {
 			filters: {"enabled": 1},
 			fields:	['mode_of_payment']
 		}).then(methods => {
 			if (methods.length > 0){
-				cur_frm.clear_table("opening_balances");
+				frm.clear_table("opening_balances");
 				methods.forEach(function(method) {
-					let row = cur_frm.add_child("opening_balances");
+					let row = frm.add_child("opening_balances");
 					row.mode_of_payment = method.mode_of_payment;
 					row.opening_amount = 0;
 				});
-				cur_frm.refresh_field("opening_balances");
+				frm.refresh_field("opening_balances");
 			}
 		})
 }
 
-function getFuelPrices(){
+function getFuelPrices(frm){
 	frappe.call({
 		method: 'petrol_station.petrol_station.doctype.pump_meter_reading.pump_meter_reading.get_all_fuel_items_with_prices',
 		freeze: true,
@@ -185,14 +185,14 @@ function getFuelPrices(){
 		callback: function(r) {
 			if (r.message) {
 				let prices = r.message;
-				cur_frm.clear_table("selling_prices");
+				frm.clear_table("selling_prices");
 				prices.forEach(function(price) {
-					let row = cur_frm.add_child("selling_prices");
+					let row = frm.add_child("selling_prices");
 					row.fuel_item = price.item;
 					row.rate = price.price;
 				})
 
-				cur_frm.refresh_field("selling_prices");
+				frm.refresh_field("selling_prices");
 			}
 		}
 	})
